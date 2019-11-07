@@ -14,8 +14,6 @@
     console.error('Unable to find API key attribute on gallery element (attribute name should be: \'data-api-key\')');
     return;
   }
-console.log('apiKey ');
- console.log(apiKey);
 
   var groupId = gallery.getAttribute('data-group-id');
   if (! groupId) {
@@ -73,7 +71,6 @@ console.log('apiKey ');
 
       if (response.stat == 'ok') {
         var photos = response.photos;
-        console.log(" photos[1] from response, length, total: " + photos[1] +" " + photos.photo.length + " " + photos.photo.total ); 
         if (photos.total && photos.total >= 1 && photos.photo.length >= 1) {
           var thumbnailHtml = '';
           for (var i = 0; i < photos.photo.length; i++) {
@@ -96,11 +93,10 @@ console.log('apiKey ');
               '" data-url-240="' + url240 + '" data-url-320="' + url320 + '" data-url-500="' + url500 + '" ' +
               'data-url-640="' + url640 + '"><img src="' + thumbnailUrl + '" /></div>';
           }
-console.log('thumbnailHtml String: ');
- console.log(thumbnailHtml);
  
           gallery.innerHTML = thumbnailHtml;
           gallery.photoCount = photos.photo.length;
+          
 // 
 //. LOOKS LIKE he adds a click event to each photo here
 //
@@ -206,6 +202,14 @@ console.log('thumbnailHtml String: ');
         next.addEventListener('click', nextClick, false);
         navigation.appendChild(next);
 
+        // add select button to navigation elements. Dave
+        var select = document.createElement('span');
+        select.className = 'select';
+        select.innerHTML = gallery.getAttribute('data-select-button') || '<a href="javascript:void(0)">  SELECT</a>';
+        select.addEventListener('click', selectClick, false);
+        navigation.appendChild(select);
+
+
         // add navigation elements to lightbox
         lightbox.navigation = navigation;
         lightbox.appendChild(navigation);
@@ -227,10 +231,7 @@ console.log('thumbnailHtml String: ');
       var viewportWidth = document.documentElement.clientWidth - 40;
       var viewportHeight = document.documentElement.clientHeight - 100;
 
-console.log('viewportWidth: ');
-console.log(viewportWidth);
-console.log('viewportHeight: ');
-console.log(viewportHeight);
+
 
       if (viewportWidth < 320 || viewportHeight < 320) {
         imgUrl = url240;
@@ -266,7 +267,11 @@ console.log(viewportHeight);
       var index = (navigation.photoIndex + 1) % navigation.photoCount;
       gallery.getElementsByClassName('thumbnail')[index].click();
     }
-
+    function selectClick() {
+      var navigation = overlay.lightbox.navigation;
+      var index = (navigation.photoIndex) % navigation.photoCount;
+      window.prompt("Index = " + (index + 1));
+    }
     function navKeypress(event) {
       if (overlay.style.display != 'none') {
         if (event.which == 37) { // left arrow

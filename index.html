@@ -5,19 +5,24 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge"> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
 
-    <title>flickr_gallery demo</title> 
+    <title>Image Selector Demo</title> 
     <link rel="stylesheet" href="flickrgallery/src/assets/css/flickr_gallery_DDR.css"> 
 </head> 
 <body> 
     <div id="wrapper">
-        <div id="command-line" style = "position:relative; left:5px; top:2px; background-color:yellow; ">
-            This is the command area
+        <div id="command-line" style = "position:relative; left:0px; top:2px; ">
+            <div id="command-button" >Load Flickr Gallery
+               
+            </div>
+            <div id="command-button" >Load Local Drive</div>
+            <div id="command-button" >Drop Gallery</div>
+            <div id="command-button" >Save Selected Area</div>
         </div>
+        <div id="flickr-gallery" data-api-key="cb5077b96f47d8856252614d683a61d2" data-group-id="34427469219@N01"></div> 
    
-        <div id="flickr-gallery" style = "position:relative;  left:0px; top:0px;" data-api-key="cb5077b96f47d8856252614d683a61d2" data-group-id="34427469219@N01"></div> 
     
-        <div id="select-gallery" style = "position:relative; left:400px; top:2px; background-color:blue;">
-            This is the display area for selected photos
+        <div id="select-gallery" style = "position:relative; left:0px; top:2px; height:1500px; background-color:white;">
+            Selected Photo Thumbs Appear in Here
         </div>
     </div> 
     <script src="flickrgallery/src/assets/js/flickr_gallery_DDR.js"></script>  
