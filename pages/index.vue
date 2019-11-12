@@ -4,9 +4,11 @@
       <div class="logo">Gallery Manager</div>
       <nav>
         <span v-if="isSaved" class="success">saved!</span>
-        <button @click="load">Load Local Drive</button>
-        <button @click="drop">Drop Gallery</button>
-        <button @click="save">Save Selected Area</button>
+        <button @click="load('gallery1')">Load Drive 1</button>
+        <button @click="load('gallery2')">Load Drive 2</button>
+        <button @click="load('saved')">Load Saved</button>
+        <button @click="drop" :disabled="!images.length">Drop Gallery</button>
+        <button @click="save" :disabled="!selected.length">Save Selected</button>
       </nav>
     </header>
 
@@ -32,8 +34,8 @@ export default {
     isSaved: false
   }),
   methods: {
-    load: function() {
-      this.$axios.$get("/api/load").then(response => (this.images = response));
+    load: function(drive) {
+      this.$axios.$get(`/api/load?drive=${drive}`).then(response => (this.images = response));
     },
     save: function() {
       this.$axios.$post("/api/save", { selected: this.selected }).then(response => {
@@ -89,6 +91,14 @@ button {
   cursor: pointer;
   transition: 0.1s;
   outline: none;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+button:disabled:hover {
+  border-color: #ccc;
 }
 
 button:hover {

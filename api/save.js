@@ -9,7 +9,7 @@ export default function (req, res, next) {
       selected.forEach(function (image) {
         fs.copySync(
           path.resolve(__dirname, `../static/${image}`),
-          path.resolve(__dirname, `../static/saved/${image.substring(8)}`)
+          path.resolve(__dirname, `../static/saved/${image.substring(9)}`)
         );
       });
     }
