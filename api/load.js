@@ -11,7 +11,14 @@ export default function (req, res, next) {
       return console.log('Unable to scan directory: ' + err);
     }
     files.forEach(function (file) {
-      images.push(`/${drive}/` + file);
+      const url = `/${drive}/${file}`;
+      const imgObj = {
+        url,
+        name: file,
+        path: url,
+      }
+
+      images.push(imgObj);
     });
     res.json(images);
     next();

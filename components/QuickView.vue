@@ -1,7 +1,41 @@
 <template>
   <div class="quick-view">
     <div class="box">
-      <img :src=picked alt />
+      <img :src="picked.url" alt />
+      <div class="metadata">
+        <div class="text-left">
+          <div v-if="picked.name">
+            <b>name:</b>
+            {{picked.name}}
+          </div>
+          <div v-if="picked.lastModified">
+            <b>last modified:</b>
+            {{picked.lastModified | date}}
+          </div>
+          <div>
+            <b>path:</b>
+            {{picked.path}}
+          </div>
+          <div>
+            <b>jobId:</b>
+            {{picked.jobId}}
+          </div>
+          <div>
+            <b>astraId:</b>
+            {{picked.astraId}}
+          </div>
+        </div>
+        <div class="text-right">
+          <div v-if="picked.type">
+            <b>type:</b>
+            {{picked.type}}
+          </div>
+          <div v-if="picked.size">
+            <b>size:</b>
+            {{picked.size | kb }} KB
+          </div>
+        </div>
+      </div>
       <button @click="close">close</button>
       <button @click="select">select</button>
     </div>
@@ -25,7 +59,7 @@
 
 .quick-view img {
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   max-height: calc(90vh - 100px);
 }
 
@@ -46,17 +80,33 @@
   font-weight: bold;
   cursor: pointer;
 }
+.metadata {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 14px;
+  line-height: 18px;
+}
 </style>
 
 <script>
 export default {
-  props: ['picked'],
+  props: ["picked"],
   methods: {
     close: function() {
       this.$emit("close");
     },
     select: function() {
       this.$emit("select", this.picked);
+    }
+  },
+  filters: {
+    date: function(time) {
+      return new Date(time).toLocaleString();
+    },
+    kb: function(size) {
+      return Math.ceil(size / 1024);
     }
   }
 };

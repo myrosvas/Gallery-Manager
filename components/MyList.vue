@@ -3,9 +3,9 @@
     <div class="hint" v-if="!selected.length">No selected items</div>
     <div
       class="selected"
-      v-for="(item, index) of selected"
-      :key="index">
-      <img v-bind:src="item" alt />
+      v-for="item of selected"
+      :key="item.lastModifed">
+      <img v-bind:src="item.url" alt />
     </div>
   </div>
 </template>

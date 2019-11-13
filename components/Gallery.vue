@@ -3,10 +3,10 @@
     <div class="hint" v-if="!images.length">Gallery is empty</div>
     <div
       class="item"
-      v-for="(item, index) of images"
-      :key="index"
+      v-for="item of images"
+      :key="item.lastModifed"
       @click="pick(item)">
-      <img v-bind:src="item" alt />
+      <img v-bind:src="item.url" alt />
     </div>
 
     <QuickView v-if="picked" v-bind:picked="picked" @close="close" @select="select" />
