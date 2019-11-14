@@ -8,7 +8,9 @@ export default function (req, res, next) {
     if (path) {
       const fullPath = pathHelper.resolve(__dirname, `../static/${path}`);
       fs.remove(fullPath, err => {
-        if (err) return console.error(err)
+        if (err) {
+          console.error(err);
+        }
 
         res.end();
         next();

@@ -90,19 +90,22 @@ export default {
       if (this.isSavedDrive) {
         this.drop();
       }
-      this.$axios.$get(`/api/load?drive=${drive}`).then(response => {
-        this.isSavedDrive = drive === "saved";
-        if (this.isSavedDrive) {
-          this.prevState = this.images;
-          this.images = response;
-          // if (this.images.length) {
-          //   this.cleanSelected();
-          // }
-          return;
-        }
-        this.images = this.images.concat(response);
-        this.showSuccessMsg("added");
-      });
+      this.$axios
+        .$get(`/api/load?drive=${drive}`)
+        .then(response => {
+          this.isSavedDrive = drive === "saved";
+          if (this.isSavedDrive) {
+            this.prevState = this.images;
+            this.images = response;
+            // if (this.images.length) {
+            //   this.cleanSelected();
+            // }
+            return;
+          }
+          this.images = this.images.concat(response);
+          this.showSuccessMsg("added");
+        })
+        .catch(error => console.log(error));
     },
     save: function() {
       return this.isRemoteFiles ? this.saveToRemote() : this.saveToLocalDrive();
@@ -130,10 +133,10 @@ export default {
       this.selected = this.selected.filter(item => item.path !== path);
     },
     removeSelected: function({ path }) {
-      this.images = this.images.filter(item => item.path !== path);
       this.$axios.$post("/api/remove", { path }).then(response => {
         this.showSuccessMsg("removed");
       });
+      this.images = this.images.filter(item => item.path !== path);
     },
     back: function() {
       this.images = this.prevState;

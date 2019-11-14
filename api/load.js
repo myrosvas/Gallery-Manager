@@ -8,7 +8,9 @@ export default function (req, res, next) {
 
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
-      return console.log('Unable to scan directory: ' + err);
+      console.error(err);
+      res.send([]);
+      return next();
     }
     files.forEach(function (file) {
       const url = `/${drive}/${file}`;
