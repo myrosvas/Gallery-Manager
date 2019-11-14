@@ -1,15 +1,17 @@
 <template>
   <div class="gallery">
-    <div class="hint" v-if="!images.length">Gallery is empty</div>
-    <div
-      class="item"
-      v-for="item of images"
-      :key="item.lastModifed"
-      @click="pick(item)">
+    <div class="hint" v-if="!filtered.length">Gallery is empty</div>
+    <div class="item" v-for="item of filtered" :key="item.path" @click="pick(item)">
       <img v-bind:src="item.url" alt />
     </div>
-
-    <QuickView v-if="picked" v-bind:picked="picked" @close="close" @select="select" />
+    <QuickView
+      v-if="picked"
+      :picked="picked"
+      :isSavedDrive="isSavedDrive"
+      @close="close"
+      @select="select"
+      @remove="remove"
+    />
   </div>
 </template>
 
@@ -30,17 +32,18 @@
   justify-content: center;
 }
 
-.item img{
-  transition: .1s;
+.item img {
+  transition: 0.1s;
   max-height: 280px;
 }
 
-.item:hover img{
+.item:hover img {
   transform: scale(1.1);
 }
 </style>
 
 <script>
+import { uniq } from "underscore";
 import QuickView from "~/components/QuickView.vue";
 
 export default {
@@ -52,7 +55,12 @@ export default {
       picked: null
     };
   },
-  props: ["images"],
+  computed: {
+    filtered: function() {
+      return uniq(this.images, item => item.path);
+    }
+  },
+  props: ["images", "isSavedDrive"],
   methods: {
     pick: function(image) {
       this.picked = image;
@@ -61,7 +69,11 @@ export default {
       this.picked = null;
     },
     select: function(image) {
-      this.$emit('select', image);
+      this.$emit("select", image);
+      this.picked = null;
+    },
+    remove: function(image) {
+      this.$emit("removeSelected", image);
       this.picked = null;
     }
   }

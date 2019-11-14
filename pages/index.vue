@@ -1,14 +1,17 @@
 <template>
   <div class="container">
     <header>
-      <div class="logo">Gallery Manager</div>
+      <div class="logo">
+        Gallery Manager
+        <span v-if="isSavedDrive">/ Selected</span>
+      </div>
       <nav>
-        <span v-if="isSaved" class="success">saved!</span>
-        <span v-if="isAdded" class="success">added!</span>
+        <span v-if="msg" class="success">{{msg}}</span>
+        <!-- TODO: upload from the local disc -->
         <!-- <div class="file">
           <label for="upload" class="btn">load local images</label>
           <input type="file" id="upload" ref="uploads" @change="upload" multiple />
-        </div> -->
+        </div>-->
         <button @click="load('gallery1')">load dam #1</button>
         <button @click="load('gallery2')">load remote dam #2</button>
         <button @click="load('saved')">Load Saved</button>
@@ -18,8 +21,13 @@
     </header>
 
     <section>
-      <Gallery v-bind:images="images" @select="select" />
-      <MyList v-bind:selected="selected" />
+      <Gallery
+        :images="images"
+        :isSavedDrive="isSavedDrive"
+        @select="select"
+        @removeSelected="removeSelected"
+      />
+      <MyList v-if="!isSavedDrive" :selected="selected" @removePreselected="removePreselected" />
     </section>
   </div>
 </template>
@@ -37,9 +45,9 @@ export default {
   data: () => ({
     images: [],
     selected: [],
-    isSaved: false,
+    msg: false,
     isRemoteFiles: true,
-    isAdded: false
+    isSavedDrive: false
   }),
   methods: {
     upload: function() {
@@ -62,7 +70,7 @@ export default {
               lastModified,
               type,
               size,
-              path: null,
+              path: e.target.result,
               jobId: null,
               astraId: null
             };
@@ -77,9 +85,21 @@ export default {
     },
     load: function(drive) {
       // this.isRemoteFiles = true;
+      if (this.isSavedDrive) {
+        this.drop();
+      }
       this.$axios.$get(`/api/load?drive=${drive}`).then(response => {
+        this.isSavedDrive = drive === "saved";
+        if (this.isSavedDrive) {
+          this.images = response;
+          // if (this.images.length) {
+          //   this.cleanSelected();
+          // }
+          this.showSuccessMsg("added ony saved!");
+          return;
+        }
         this.images = this.images.concat(response);
-        this.showMsg("add");
+        this.showSuccessMsg("added!");
       });
     },
     save: function() {
@@ -89,11 +109,14 @@ export default {
       const selected = this.selected.map(({ url }) => url);
 
       this.$axios.$post("/api/save", { selected }).then(response => {
-        this.showMsg("save");
+        this.showSuccessMsg("saved!");
       });
     },
     saveToLocalDrive: function() {
       this.selected.forEach(({ url, name }) => saveAs(url, name));
+    },
+    cleanSelected: function() {
+      this.selected = [];
     },
     drop: function() {
       this.images = [];
@@ -101,18 +124,19 @@ export default {
     select: function(image) {
       this.selected = this.selected.concat(image);
     },
-    showMsg: function(type) {
-      if (type === "add") {
-        this.isAdded = true;
-      } else {
-        this.isSaved = true;
-      }
+    removePreselected: function({ path }) {
+      this.selected = this.selected.filter(item => item.path !== path);
+    },
+    removeSelected: function({ path }) {
+      this.images = this.images.filter(item => item.path !== path);
+      this.$axios.$post("/api/remove", { path }).then(response => {
+        this.showSuccessMsg("removed!");
+      });
+    },
+    showSuccessMsg: function(msg) {
+      this.msg = msg;
       setTimeout(() => {
-        if (type === "add") {
-          this.isAdded = false;
-        } else {
-          this.isSaved = false;
-        }
+        this.msg = "";
       }, 2000);
     }
   }
@@ -140,6 +164,11 @@ header {
   font-size: 26px;
   color: #333;
   font-weight: bold;
+}
+
+.logo span {
+  font-size: 20px;
+  color: #666;
 }
 
 button {

@@ -43,6 +43,7 @@ module.exports = {
   serverMiddleware: [
     { path: '/api/load', handler: '~/api/load.js' },
     { path: '/api/save', handler: '~/api/save.js' },
+    { path: '/api/remove', handler: '~/api/remove.js' },
   ],
   /*
   ** Build configuration

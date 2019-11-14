@@ -16,16 +16,16 @@
             <b>path:</b>
             {{picked.path}}
           </div>
+        </div>
+        <div class="text-right">
           <div>
             <b>jobId:</b>
-            {{picked.jobId}}
+            {{picked.jobId ? picked.jobId : 'TBD'}}
           </div>
           <div>
             <b>astraId:</b>
-            {{picked.astraId}}
+            {{picked.astraId ? picked.astraId : 'TBD'}}
           </div>
-        </div>
-        <div class="text-right">
           <div v-if="picked.type">
             <b>type:</b>
             {{picked.type}}
@@ -37,7 +37,8 @@
         </div>
       </div>
       <button @click="close">close</button>
-      <button @click="select">select</button>
+      <button v-if="isSavedDrive" @click="remove">remove</button>
+      <button v-if="!isSavedDrive" @click="select">select</button>
     </div>
   </div>
 </template>
@@ -92,13 +93,16 @@
 
 <script>
 export default {
-  props: ["picked"],
+  props: ["picked", "isSavedDrive"],
   methods: {
     close: function() {
       this.$emit("close");
     },
     select: function() {
       this.$emit("select", this.picked);
+    },
+    remove: function() {
+      this.$emit("remove", this.picked);
     }
   },
   filters: {
