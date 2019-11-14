@@ -2,21 +2,22 @@
   <div class="container">
     <header>
       <div class="logo">
-        Gallery Manager
+        <a href>Gallery Manager</a>
         <span v-if="isSavedDrive">/ Selected</span>
       </div>
       <nav>
-        <span v-if="msg" class="success">{{msg}}</span>
+        <span v-if="msg" class="msg success">{{msg}}</span>
         <!-- TODO: upload from the local disc -->
         <!-- <div class="file">
           <label for="upload" class="btn">load local images</label>
           <input type="file" id="upload" ref="uploads" @change="upload" multiple />
         </div>-->
-        <button @click="load('gallery1')">load dam #1</button>
-        <button @click="load('gallery2')">load remote dam #2</button>
-        <button @click="load('saved')">Load Saved</button>
-        <button @click="drop" :disabled="!images.length">Drop Gallery</button>
-        <button @click="save" :disabled="!selected.length">save selected</button>
+        <button v-if="isSavedDrive" @click="back">back</button>
+        <button v-if="!isSavedDrive" @click="load('gallery1')">load dam #1</button>
+        <button v-if="!isSavedDrive" @click="load('gallery2')">load dam #2</button>
+        <button v-if="!isSavedDrive" @click="load('saved')">my list</button>
+        <button v-if="!isSavedDrive" @click="drop" :disabled="!images.length">Drop Gallery</button>
+        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">save selected</button>
       </nav>
     </header>
 
@@ -45,7 +46,8 @@ export default {
   data: () => ({
     images: [],
     selected: [],
-    msg: false,
+    prevState: [],
+    msg: "",
     isRemoteFiles: true,
     isSavedDrive: false
   }),
@@ -91,15 +93,15 @@ export default {
       this.$axios.$get(`/api/load?drive=${drive}`).then(response => {
         this.isSavedDrive = drive === "saved";
         if (this.isSavedDrive) {
+          this.prevState = this.images;
           this.images = response;
           // if (this.images.length) {
           //   this.cleanSelected();
           // }
-          this.showSuccessMsg("added ony saved!");
           return;
         }
         this.images = this.images.concat(response);
-        this.showSuccessMsg("added!");
+        this.showSuccessMsg("added");
       });
     },
     save: function() {
@@ -109,7 +111,7 @@ export default {
       const selected = this.selected.map(({ url }) => url);
 
       this.$axios.$post("/api/save", { selected }).then(response => {
-        this.showSuccessMsg("saved!");
+        this.showSuccessMsg("saved");
       });
     },
     saveToLocalDrive: function() {
@@ -130,8 +132,12 @@ export default {
     removeSelected: function({ path }) {
       this.images = this.images.filter(item => item.path !== path);
       this.$axios.$post("/api/remove", { path }).then(response => {
-        this.showSuccessMsg("removed!");
+        this.showSuccessMsg("removed");
       });
+    },
+    back: function() {
+      this.images = this.prevState;
+      this.isSavedDrive = false;
     },
     showSuccessMsg: function(msg) {
       this.msg = msg;
@@ -166,6 +172,10 @@ header {
   font-weight: bold;
 }
 
+.logo a {
+  color: #333;
+}
+
 .logo span {
   font-size: 20px;
   color: #666;
@@ -186,6 +196,11 @@ button {
   cursor: pointer;
   transition: 0.1s;
   outline: none;
+}
+
+a {
+  color: #666;
+  text-decoration: none;
 }
 
 button:disabled {
@@ -219,12 +234,14 @@ img {
   max-width: 100%;
 }
 
-.success {
+.msg {
   font-size: 14px;
-  font-weight: bold;
   text-transform: uppercase;
-  color: #46ad7e;
   padding-right: 10px;
+}
+
+.success {
+  color: #46ad7e;
 }
 
 .text-left {
