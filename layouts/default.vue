@@ -24,4 +24,8 @@ html {
   box-sizing: border-box;
   margin: 0;
 }
+
+body .g-toast.top-center {
+  top: 0;
+}
 </style>

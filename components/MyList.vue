@@ -1,7 +1,7 @@
 <template>
   <div class="list">
-    <div class="hint" v-if="!filtered.length">No selected items</div>
-    <div class="selected" v-for="item of filtered" :key="item.path">
+    <div class="hint" v-if="!selected.length">No selected items</div>
+    <div class="selected" v-for="item of selected" :key="item.path">
       <div class="remove" @click="remove(item)" title="remove">&times</div>
       <img v-bind:src="item.url" alt />
     </div>
@@ -40,18 +40,18 @@
 </style>
 
 <script>
-import { uniq } from "underscore";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
-  props: ["selected"],
-  computed: {
-    filtered: function() {
-      return uniq(this.selected, item => item.path);
-    }
-  },
+  computed: mapGetters({
+    selected: "selected/filtered"
+  }),
   methods: {
-    remove: function(item) {
-      this.$emit("removePreselected", item);
+    ...mapMutations({
+      removeItem: "selected/remove"
+    }),
+    remove({ path }) {
+      this.removeItem(path);
     }
   }
 };

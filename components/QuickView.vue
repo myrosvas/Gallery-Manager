@@ -1,38 +1,38 @@
 <template>
   <div class="quick-view">
     <div class="box">
-      <img :src="picked.url" alt />
+      <img :src="selected.url" alt />
       <div class="metadata">
         <div class="text-left">
-          <div v-if="picked.name">
+          <div v-if="selected.name">
             <b>name:</b>
-            {{picked.name}}
+            {{selected.name}}
           </div>
-          <div v-if="picked.lastModified">
+          <div v-if="selected.lastModified">
             <b>last modified:</b>
-            {{picked.lastModified | date}}
+            {{selected.lastModified | date}}
           </div>
           <div>
             <b>path:</b>
-            {{picked.path}}
+            {{selected.path}}
           </div>
         </div>
         <div class="text-right">
           <div>
             <b>jobId:</b>
-            {{picked.jobId ? picked.jobId : 'TBD'}}
+            {{selected.jobId ? selected.jobId : 'TBD'}}
           </div>
           <div>
             <b>astraId:</b>
-            {{picked.astraId ? picked.astraId : 'TBD'}}
+            {{selected.astraId ? selected.astraId : 'TBD'}}
           </div>
-          <div v-if="picked.type">
+          <div v-if="selected.type">
             <b>type:</b>
-            {{picked.type}}
+            {{selected.type}}
           </div>
-          <div v-if="picked.size">
+          <div v-if="selected.size">
             <b>size:</b>
-            {{picked.size | kb }} KB
+            {{selected.size | kb }} KB
           </div>
         </div>
       </div>
@@ -92,24 +92,32 @@
 </style>
 
 <script>
+import { mapMutations, mapActions } from "vuex";
+
 export default {
-  props: ["picked", "isSavedDrive"],
+  props: ["selected", "isSavedDrive"],
   methods: {
-    close: function() {
+    ...mapActions(["removeFromSaved"]),
+    ...mapMutations({
+      selectItem: "selected/select"
+    }),
+    close() {
       this.$emit("close");
     },
-    select: function() {
-      this.$emit("select", this.picked);
+    select() {
+      this.selectItem(this.selected);
+      this.close();
     },
-    remove: function() {
-      this.$emit("remove", this.picked);
+    remove() {
+      this.removeFromSaved(this.selected);
+      this.close();
     }
   },
   filters: {
-    date: function(time) {
+    date(time) {
       return new Date(time).toLocaleString();
     },
-    kb: function(size) {
+    kb(size) {
       return Math.ceil(size / 1024);
     }
   }

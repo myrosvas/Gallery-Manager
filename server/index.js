@@ -25,22 +25,6 @@ async function start() {
 
   // Give nuxt middleware to express
   app.use(nuxt.render);
-  // .use(bodyParser.urlencoded({ extended: false }))
-  // .use(bodyParser.json())
-  // app.use('/api', router);
-
-  // app.get('http://localhost:3000/load', (req, res) => {
-  //   console.log('api:load');
-  //   const images = [
-  //     1, 2, 3
-  //   ];
-  //   res.send(images);
-  // });
-
-  // app.post('/api/save', (req, res) => {
-  //   console.log('api:save');
-  //   res.send(req.body);
-  // });
 
   // Listen the server
   app.listen(port, host)

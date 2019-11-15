@@ -1,16 +1,14 @@
 <template>
   <div class="gallery">
-    <div class="hint" v-if="!filtered.length">Gallery is empty</div>
-    <div class="item" v-for="item of filtered" :key="item.path" @click="pick(item)">
+    <div class="hint" v-if="!items.length">Gallery is empty</div>
+    <div class="item" v-for="item of items" :key="item.path" @click="pick(item)">
       <img v-bind:src="item.url" alt />
     </div>
     <QuickView
-      v-if="picked"
-      :picked="picked"
+      v-if="isOpen"
+      :selected="selected"
       :isSavedDrive="isSavedDrive"
       @close="close"
-      @select="select"
-      @remove="remove"
     />
   </div>
 </template>
@@ -43,7 +41,6 @@
 </style>
 
 <script>
-import { uniq } from "underscore";
 import QuickView from "~/components/QuickView.vue";
 
 export default {
@@ -52,29 +49,18 @@ export default {
   },
   data: () => {
     return {
-      picked: null
+      isOpen: false,
+      selected: null
     };
   },
-  computed: {
-    filtered: function() {
-      return uniq(this.images, item => item.path);
-    }
-  },
-  props: ["images", "isSavedDrive"],
+  props: ["items", "isSavedDrive"],
   methods: {
-    pick: function(image) {
-      this.picked = image;
+    pick(item) {
+      this.selected = item;
+      this.isOpen = true;
     },
-    close: function() {
-      this.picked = null;
-    },
-    select: function(image) {
-      this.$emit("select", image);
-      this.picked = null;
-    },
-    remove: function(image) {
-      this.$emit("removeSelected", image);
-      this.picked = null;
+    close() {
+      this.isOpen = false;
     }
   }
 };

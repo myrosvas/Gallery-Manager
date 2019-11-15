@@ -6,7 +6,6 @@
         <span v-if="isSavedDrive">/ Selected</span>
       </div>
       <nav>
-        <span v-if="msg" class="msg success">{{msg}}</span>
         <!-- TODO: upload from the local disc -->
         <!-- <div class="file">
           <label for="upload" class="btn">load local images</label>
@@ -16,19 +15,14 @@
         <button v-if="!isSavedDrive" @click="load('gallery1')">load dam #1</button>
         <button v-if="!isSavedDrive" @click="load('gallery2')">load dam #2</button>
         <button v-if="!isSavedDrive" @click="load('saved')">my list</button>
-        <button v-if="!isSavedDrive" @click="drop" :disabled="!images.length">Drop Gallery</button>
+        <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">save selected</button>
       </nav>
     </header>
 
     <section>
-      <Gallery
-        :images="images"
-        :isSavedDrive="isSavedDrive"
-        @select="select"
-        @removeSelected="removeSelected"
-      />
-      <MyList v-if="!isSavedDrive" :selected="selected" @removePreselected="removePreselected" />
+      <Gallery :items="items" :isSavedDrive="isSavedDrive" />
+      <MyList v-if="!isSavedDrive" />
     </section>
   </div>
 </template>
@@ -36,24 +30,32 @@
 <script>
 import Gallery from "~/components/Gallery.vue";
 import MyList from "~/components/MyList.vue";
-import { saveAs } from "file-saver";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
     Gallery,
     MyList
   },
-  data: () => ({
-    images: [],
-    selected: [],
-    prevState: [],
-    msg: "",
-    isRemoteFiles: true,
-    isSavedDrive: false
+  data() {
+    return {
+      isRemoteFiles: true,
+      isSavedDrive: false
+    };
+  },
+  computed: mapGetters({
+    items: "filteredItems",
+    selected: "selected/filtered"
   }),
   methods: {
-    upload: function() {
-      const images = this.images;
+    ...mapActions({
+      loadItems: "loadItems",
+      saveToRemoteDrive: "selected/saveToServer",
+      saveToLocalDrive: "selected/saveToDrive"
+    }),
+    ...mapMutations(["drop", "revert"]),
+    upload() {
+      const images = this.items;
       const files = this.$refs.uploads.files;
       // this.isRemoteFiles = false;
 
@@ -83,70 +85,28 @@ export default {
         // Read in the image file as a data URL.
         reader.readAsDataURL(item);
       }
-      this.showMsg("add");
+      this.$toast.success("ADDED");
     },
-    load: function(drive) {
+    async load(drive) {
       // this.isRemoteFiles = true;
       if (this.isSavedDrive) {
         this.drop();
       }
-      this.$axios
-        .$get(`/api/load?drive=${drive}`)
-        .then(response => {
-          this.isSavedDrive = drive === "saved";
-          if (this.isSavedDrive) {
-            this.prevState = this.images;
-            this.images = response;
-            // if (this.images.length) {
-            //   this.cleanSelected();
-            // }
-            return;
-          }
-          this.images = this.images.concat(response);
-          this.showSuccessMsg("added");
-        })
-        .catch(error => console.log(error));
+      this.isSavedDrive = drive === "saved";
+      try {
+        await this.loadItems({ drive, isSavedDrive: this.isSavedDrive });
+      } catch (e) {
+        console.log(e);
+      }
     },
-    save: function() {
-      return this.isRemoteFiles ? this.saveToRemote() : this.saveToLocalDrive();
+    save() {
+      return this.isRemoteFiles
+        ? this.saveToRemoteDrive()
+        : this.saveToLocalDrive();
     },
-    saveToRemote: function() {
-      const selected = this.selected.map(({ url }) => url);
-
-      this.$axios.$post("/api/save", { selected }).then(response => {
-        this.showSuccessMsg("saved");
-      });
-    },
-    saveToLocalDrive: function() {
-      this.selected.forEach(({ url, name }) => saveAs(url, name));
-    },
-    cleanSelected: function() {
-      this.selected = [];
-    },
-    drop: function() {
-      this.images = [];
-    },
-    select: function(image) {
-      this.selected = this.selected.concat(image);
-    },
-    removePreselected: function({ path }) {
-      this.selected = this.selected.filter(item => item.path !== path);
-    },
-    removeSelected: function({ path }) {
-      this.$axios.$post("/api/remove", { path }).then(response => {
-        this.showSuccessMsg("removed");
-      });
-      this.images = this.images.filter(item => item.path !== path);
-    },
-    back: function() {
-      this.images = this.prevState;
+    back() {
+      this.revert();
       this.isSavedDrive = false;
-    },
-    showSuccessMsg: function(msg) {
-      this.msg = msg;
-      setTimeout(() => {
-        this.msg = "";
-      }, 2000);
     }
   }
 };
@@ -235,16 +195,6 @@ section > div {
 
 img {
   max-width: 100%;
-}
-
-.msg {
-  font-size: 14px;
-  text-transform: uppercase;
-  padding-right: 10px;
-}
-
-.success {
-  color: #46ad7e;
 }
 
 .text-left {

@@ -38,8 +38,14 @@ module.exports = {
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/toast',
   ],
+  toast: {
+    duration: 2000,
+    position: 'top-center',
+    containerClass: 'g-toast'
+  },
   serverMiddleware: [
     { path: '/api/load', handler: '~/api/load.js' },
     { path: '/api/save', handler: '~/api/save.js' },
