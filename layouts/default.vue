@@ -25,7 +25,54 @@ html {
   margin: 0;
 }
 
+select {
+  font-size: 14px;
+  font-weight: normal;
+  font-family: Arial, sans-serif;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+}
+
 body .g-toast.top-center {
   top: 0;
+}
+
+.inline-block {
+  display: inline;
+}
+
+.align-right {
+  margin-left: auto;
+}
+
+.align-light {
+  margin-right: auto;
+}
+
+.black {
+  color: #333;
+}
+
+.hint {
+  color: #777;
+  font-size: 16px;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: top;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
 }
 </style>

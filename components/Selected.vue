@@ -1,9 +1,11 @@
 <template>
   <div class="list">
     <div class="hint" v-if="!selected.length">No selected items</div>
-    <div class="selected" v-for="item of selected" :key="item.path">
-      <div class="remove" @click="remove(item)" title="remove">&times</div>
-      <img v-bind:src="item.url" alt />
+    <div class="selected-grid" v-if="selected.length">
+      <div class="selected" v-for="item of selected" :key="item.path">
+        <div class="remove" @click="remove(item)" title="remove">&times</div>
+        <img v-bind:src="item.url" alt />
+      </div>
     </div>
   </div>
 </template>
@@ -11,15 +13,21 @@
 <style>
 .list {
   margin-left: 20px;
-  flex: 0 0 340px;
-  overflow-y: auto;
+  flex: 0 0 330px;
+  padding: 14px 0 9px 12px;
 }
 
 .selected {
-  float: left;
-  margin: 4px;
+  margin: 0 5px 5px 0;
   width: 150px;
   position: relative;
+  float: left;
+}
+
+.selected-grid {
+  overflow-y: auto;
+  padding-right: 8px;
+  height: 100%;
 }
 
 .remove {

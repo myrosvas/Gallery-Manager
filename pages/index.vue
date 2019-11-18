@@ -3,7 +3,7 @@
     <header>
       <div class="logo">
         <a href>Gallery Manager</a>
-        <span v-if="isSavedDrive">/ Selected</span>
+        <span v-if="isSavedDrive">/ Saved</span>
       </div>
       <nav>
         <!-- TODO: upload from the local disc -->
@@ -12,30 +12,32 @@
           <input type="file" id="upload" ref="uploads" @change="upload" multiple />
         </div>-->
         <button v-if="isSavedDrive" @click="back">back</button>
-        <button v-if="!isSavedDrive" @click="load('gallery1')">load dam #1</button>
-        <button v-if="!isSavedDrive" @click="load('gallery2')">load dam #2</button>
-        <button v-if="!isSavedDrive" @click="load('saved')">my list</button>
+        <button v-if="!isSavedDrive" @click="load('gallery1')">Load from Adobe</button>
+        <button v-if="!isSavedDrive" @click="load('gallery2')">Load from Xinet</button>
+        <button v-if="!isSavedDrive" @click="load('gallery3')">Load from Aprimo</button>
+        <button v-if="!isSavedDrive" @click="load('saved')">My List</button>
         <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
-        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">save selected</button>
+        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>
+        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Commit Selected</button>
       </nav>
     </header>
 
     <section>
       <Gallery :items="items" :isSavedDrive="isSavedDrive" />
-      <MyList v-if="!isSavedDrive" />
+      <Selected v-if="!isSavedDrive" />
     </section>
   </div>
 </template>
 
 <script>
 import Gallery from "~/components/Gallery.vue";
-import MyList from "~/components/MyList.vue";
+import Selected from "~/components/Selected.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   components: {
     Gallery,
-    MyList
+    Selected
   },
   data() {
     return {
@@ -186,27 +188,6 @@ section {
 section > div {
   background-color: #fff;
   height: calc(100vh - 80px);
-  padding: 12px;
-}
-
-.hint {
-  color: #777;
-}
-
-img {
-  max-width: 100%;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.mb-20 {
-  margin-bottom: 20px;
 }
 
 .file {

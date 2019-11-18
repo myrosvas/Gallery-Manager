@@ -13,14 +13,16 @@ export const actions = {
       ? commit('addSaved', items)
       : commit('add', items);
   },
-  async removeFromSaved({ state, commit }, { path }) {
+  async removeFromSaved({ state, commit }, { path, name }) {
     try {
       await this.$axios.$post("/api/remove", { path });
-      commit('remove', path);
-      this.$toast.success("REMOVED");
     } catch (e) {
-      this.$toast.error("Server Error");
+      return this.$toast.error("Server Error");
     }
+
+    commit('remove', path);
+    commit('selected/remove', name);
+    this.$toast.success("REMOVED");
   }
 }
 

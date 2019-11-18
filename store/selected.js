@@ -26,7 +26,7 @@ export const mutations = {
     state.selected = state.selected.concat(item);
   },
   remove(state, path) {
-    state.selected = state.selected.filter(item => item.path !== path);
+    state.selected = state.selected.filter(item => !item.path.includes(path));
   }
 }
 

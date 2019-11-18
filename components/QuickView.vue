@@ -92,7 +92,7 @@
 </style>
 
 <script>
-import { mapMutations, mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   props: ["selected", "isSavedDrive"],
