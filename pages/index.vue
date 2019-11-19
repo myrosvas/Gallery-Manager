@@ -46,7 +46,7 @@ export default {
     };
   },
   computed: mapGetters({
-    items: "filteredItems",
+    items: "limited",
     selected: "selected/filtered"
   }),
   methods: {

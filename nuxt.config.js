@@ -29,6 +29,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vue-infinite-scroll', mode: 'client' },
+    { src: '~/plugins/vue-masonry', mode: 'client' },
   ],
   /*
   ** Nuxt.js dev-modules

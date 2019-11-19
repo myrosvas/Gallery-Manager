@@ -13,6 +13,11 @@ export default function (req, res, next) {
       return next();
     }
     files.forEach(function (file) {
+      const fullPath = path.join(directoryPath, file);
+      const isDir = fs.statSync(fullPath).isDirectory();
+
+      if (isDir) return false;
+
       const url = `/${drive}/${file}`;
       const imgObj = {
         url,

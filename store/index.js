@@ -2,12 +2,18 @@ import { uniq } from "underscore";
 
 export const state = () => ({
   items: [],
-  prevItems: []
+  list: [],
+  prevItems: [],
+  end: 40,
 })
 
 export const actions = {
-  async loadItems({ commit }, { drive, isSavedDrive }) {
+  async loadItems({ commit, state }, { drive, isSavedDrive }) {
     const items = await this.$axios.$get(`/api/load?drive=${drive}`);
+
+    if (state.items.length) {
+      commit('changeInterval');
+    }
 
     return isSavedDrive
       ? commit('addSaved', items)
@@ -23,6 +29,9 @@ export const actions = {
     commit('remove', path);
     commit('selected/remove', name);
     this.$toast.success("REMOVED");
+  },
+  append() {
+
   }
 }
 
@@ -43,9 +52,19 @@ export const mutations = {
   },
   remove(state, path) {
     state.items = state.items.filter(item => item.path !== path);
+  },
+  changeInterval(state) {
+    state.end = state.end + 10;
   }
 }
 
 export const getters = {
-  filteredItems: state => uniq(state.items, item => item.path)
+  filteredItems(state) {
+    return uniq(state.items, item => item.path);
+  },
+  limited(state) {
+    const next = state.items.slice(0, state.end);
+
+    return state.list.concat(next);
+  }
 }
