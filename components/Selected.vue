@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .list {
   margin-left: 20px;
   flex: 0 0 330px;

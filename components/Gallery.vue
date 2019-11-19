@@ -65,7 +65,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .gallery {
   flex: 1;
   display: flex;
@@ -92,13 +92,18 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
+
+  &:hover .over {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 .over {
   display: flex;
   visibility: hidden;
   opacity: 0;
-  transition: opacity .02s .09s;
+  transition: opacity 0.02s 0.09s;
   position: absolute;
   left: 0;
   right: 0;
@@ -110,69 +115,30 @@ export default {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-.item:hover .over {
-  visibility: visible;
-  opacity: 1;
-}
-
-.icon {
-  display: block;
-  width: 36px;
-  height: 36px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 70%;
-  background-color: rgba(0, 0, 0, 0.9);
-  margin: 5px;
-  cursor: pointer;
-}
-
 .see {
-  background-image: url("~assets/look.svg");
+  background-image: url("~assets/icons/look.svg");
+  background-size: 65%;
 }
 
 .plus {
-  background-image: url("~assets/plus.svg");
-  background-size: 50%;
+  background-image: url("~assets/icons/plus.svg");
 }
 
 .cross {
-  background-image: url("~assets/cross.svg");
-  background-size: 50%;
+  background-image: url("~assets/icons/cross.svg");
 }
 
-.small .item {
-  max-width: 100px;
-}
+.item {
+  .small & {
+    max-width: 100px;
+  }
 
-.small .item img {
-  max-width: 100px;
-}
+  .medium & {
+    max-width: 150px;
+  }
 
-.medium .item {
-  max-width: 150px;
-}
-
-.medium .item img {
-  max-width: 150px;
-}
-
-.large .item {
-  max-width: 200px;
-}
-
-.large .item img {
-  max-width: 200px;
-}
-
-.item:hover {
-}
-
-select {
-  font-size: 14px;
-  font-weight: normal;
-  font-family: Arial, sans-serif;
-  color: #333;
-  outline: none;
+  .large & {
+    max-width: 200px;
+  }
 }
 </style>

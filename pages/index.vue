@@ -114,7 +114,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -133,56 +133,16 @@ header {
 
 .logo {
   font-size: 26px;
-  color: #333;
   font-weight: bold;
-}
 
-.logo a {
-  color: #333;
-}
-
-.logo span {
-  font-size: 20px;
-  color: #666;
-}
-
-button {
-  font-size: 11px;
-  font-family: Arial;
-  text-transform: uppercase;
-  height: 30px;
-  font-weight: 400;
-  line-height: 30px;
-  margin: 0;
-  padding: 0 10px;
-  background-color: #fff;
-  background-image: none;
-  background: linear-gradient(#ffffff, #ffffff);
-  cursor: pointer;
-  transition: 0.1s;
-  outline: none;
-}
-
-a {
-  color: #666;
-  text-decoration: none;
-}
-
-button:disabled {
-  cursor: default;
-}
-
-button:disabled:hover {
-  border-color: #ccc;
-}
-
-button:hover {
-  border-color: #a2a2a2;
+  span {
+    font-size: 20px;
+    color: #666;
+  }
 }
 
 section {
   display: flex;
-  height: 60px;
 }
 
 section > div {
@@ -209,10 +169,10 @@ section > div {
   outline: none;
   border: 1px solid #d1d1d1;
   border-bottom: 1px solid #bababa;
-}
 
-.btn:hover {
-  border-color: #a2a2a2;
+  &:hover {
+    border-color: #a2a2a2;
+  }
 }
 
 #upload {

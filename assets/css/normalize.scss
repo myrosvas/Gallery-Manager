@@ -1,0 +1,74 @@
+@import "vars";
+
+html {
+  font-family: $font;
+  font-size: 16px;
+  word-spacing: 1px;
+  line-height: 1;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  color: $default;
+  background-color: $light-grey;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+a {
+  color: $default;
+  text-decoration: none;
+}
+
+select,
+button,
+textarea {
+  font-family: $font;
+}
+
+button {
+  font-size: 11px;
+  text-transform: uppercase;
+  height: 30px;
+  font-weight: 400;
+  line-height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  background-color: #fff;
+  background-image: none;
+  background: linear-gradient(#ffffff, #ffffff);
+  cursor: pointer;
+  transition: 0.1s;
+  outline: none;
+
+  &:hover {
+    border-color: #a2a2a2;
+  }
+}
+
+button:disabled {
+  cursor: default;
+
+  &:hover {
+    border-color: #ccc;
+  }
+}
+
+select {
+  font-size: 14px;
+  font-weight: normal;
+  color: $default;
+  font-family: $font, sans-serif;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: top;
+}

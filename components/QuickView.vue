@@ -43,7 +43,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .quick-view {
   position: fixed;
   z-index: 3;
@@ -56,12 +56,12 @@
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
   text-align: center;
-}
 
-.quick-view img {
-  display: block;
-  margin-bottom: 10px;
-  max-height: calc(90vh - 100px);
+  img {
+    display: block;
+    margin-bottom: 10px;
+    max-height: calc(90vh - 100px);
+  }
 }
 
 .box {

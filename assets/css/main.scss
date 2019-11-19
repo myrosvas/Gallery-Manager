@@ -1,0 +1,30 @@
+@import "vars";
+@import "normalize";
+@import "decorators";
+
+select {
+  font-weight: normal;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+}
+
+body .g-toast.top-center {
+  top: 0;
+}
+
+.hint {
+  color: $grey;
+}
+
+.icon {
+  display: block;
+  width: 36px;
+  height: 36px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 50%;
+  background-color: rgba(0, 0, 0, 0.9);
+  margin: 5px;
+  cursor: pointer;
+}
