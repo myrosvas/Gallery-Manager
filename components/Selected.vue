@@ -2,10 +2,12 @@
   <div class="list">
     <div class="hint" v-if="!selected.length">No selected items</div>
     <div class="selected-grid" v-if="selected.length">
-      <div class="selected" v-for="item of selected" :key="item.path">
-        <div class="remove" @click="remove(item)" title="remove">&times</div>
-        <img v-bind:src="item.url" alt />
-      </div>
+      <masonry :cols="2" :gutter="{default: '5px'}">
+        <div class="selected" v-for="item of selected" :key="item.path">
+          <div class="remove" @click="remove(item)" title="remove">&times</div>
+          <img v-bind:src="item.url" alt />
+        </div>
+      </masonry>
     </div>
   </div>
 </template>
@@ -18,15 +20,16 @@
 }
 
 .selected {
-  margin: 0 5px 5px 0;
-  width: 150px;
+  // margin: 0 5px 5px 0;
+  margin-bottom: 5px;
+  // width: 150px;
   position: relative;
   float: left;
 }
 
 .selected-grid {
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 12px;
   height: 100%;
 }
 

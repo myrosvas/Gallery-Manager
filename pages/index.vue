@@ -23,7 +23,7 @@
     </header>
 
     <section>
-      <Gallery :items="items" :isSavedDrive="isSavedDrive" />
+      <Gallery :items="items" :isSavedDrive="isSavedDrive" :isLoading="isLoading" />
       <Selected v-if="!isSavedDrive" />
     </section>
   </div>
@@ -42,7 +42,8 @@ export default {
   data() {
     return {
       isRemoteFiles: true,
-      isSavedDrive: false
+      isSavedDrive: false,
+      isLoading: false
     };
   },
   computed: mapGetters({
@@ -91,12 +92,14 @@ export default {
     },
     async load(drive) {
       // this.isRemoteFiles = true;
+      this.isLoading = true;
       if (this.isSavedDrive) {
         this.drop();
       }
       this.isSavedDrive = drive === "saved";
       try {
         await this.loadItems({ drive, isSavedDrive: this.isSavedDrive });
+        this.isLoading = false;
       } catch (e) {
         console.log(e);
       }

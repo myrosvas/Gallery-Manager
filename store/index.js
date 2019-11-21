@@ -4,20 +4,21 @@ export const state = () => ({
   items: [],
   list: [],
   prevItems: [],
-  end: 40,
+  limit: 0,
+  step: 0,
 })
 
 export const actions = {
   async loadItems({ commit, state }, { drive, isSavedDrive }) {
+    if (isSavedDrive) {
+      commit('save');
+    }
     const items = await this.$axios.$get(`/api/load?drive=${drive}`);
 
     if (state.items.length) {
       commit('changeInterval');
     }
-
-    return isSavedDrive
-      ? commit('addSaved', items)
-      : commit('add', items);
+    commit('add', items);
   },
   async removeFromSaved({ state, commit }, { path, name }) {
     try {
@@ -29,20 +30,17 @@ export const actions = {
     commit('remove', path);
     commit('selected/remove', name);
     this.$toast.success("REMOVED");
-  },
-  append() {
-
   }
 }
 
 export const mutations = {
   add(state, items) {
     state.items = state.items.concat(items);
-    this.$toast.success('ADDED');
+    setTimeout(() => this.$toast.success('LOADED'), 400);
   },
-  addSaved(state, items) {
+  save(state) {
     state.prevItems = state.items;
-    state.items = items;
+    state.items = [];
   },
   drop(state) {
     state.items = [];
@@ -53,8 +51,15 @@ export const mutations = {
   remove(state, path) {
     state.items = state.items.filter(item => item.path !== path);
   },
-  changeInterval(state) {
-    state.end = state.end + 10;
+  changeInterval(state, payload) {
+    if (payload) {
+      const { limit, step } = payload;
+
+      state.limit = limit;
+      state.step = step;
+    } else {
+      state.limit = state.limit + state.step;
+    }
   }
 }
 
@@ -62,9 +67,11 @@ export const getters = {
   filteredItems(state) {
     return uniq(state.items, item => item.path);
   },
+  count: (state, getters) => getters.filteredItems.length,
   limited(state) {
-    const next = state.items.slice(0, state.end);
+    const next = state.items.slice(0, state.limit);
 
     return state.list.concat(next);
   }
+  // limited: (state, getters) => getters.filteredItems,
 }
