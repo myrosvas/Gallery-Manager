@@ -16,15 +16,23 @@
             <b>path:</b>
             {{selected.path}}
           </div>
-        </div>
-        <div class="text-right">
-          <div>
-            <b>jobId:</b>
-            {{selected.jobId ? selected.jobId : 'TBD'}}
-          </div>
           <div>
             <b>astraId:</b>
             {{selected.astraId ? selected.astraId : 'TBD'}}
+          </div>
+        </div>
+        <div class="text-right">
+          <div>
+            <b>width:</b>
+            {{selected.width}}px
+          </div>
+          <div>
+            <b>height:</b>
+            {{selected.height}}px
+          </div>
+          <div>
+            <b>jobId:</b>
+            {{selected.jobId ? selected.jobId : 'TBD'}}
           </div>
           <div v-if="selected.type">
             <b>type:</b>
