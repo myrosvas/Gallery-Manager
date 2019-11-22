@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const probe = require('probe-image-size');
+const sharp = require('sharp');
 
 export default function (req, res, next) {
   const drive = req.query && req.query.drive || 'gallery';
@@ -12,6 +12,13 @@ export default function (req, res, next) {
       console.error(err);
       res.send([]);
       // return next();
+    }
+
+    const thumbDir = 'thumb';
+    const thumbDirPath = path.join(__dirname, `../static/${thumbDir}`);
+
+    if (!fs.existsSync(thumbDirPath)) {
+      fs.mkdirSync(thumbDirPath);
     }
 
     let done = 0;
@@ -32,26 +39,32 @@ export default function (req, res, next) {
       }
 
       const url = `/${drive}/${file}`;
-      const input = fs.createReadStream(fullPath);
+      const newName = `${file}.webp`;
+      const thumbUrl = `/${thumbDir}/${newName}`;
+      // const input = fs.createReadStream(fullPath);
+      const fullThumbUrl = path.resolve(__dirname, `../static/${thumbDir}/${newName}`);
 
-      probe(input)
-        .then(dimensions => {
-          const { width = 0, height = 0 } = dimensions;
+      sharp(fullPath)
+        .resize(150)
+        .webp()
+        .toFile(fullThumbUrl)
+        .then((dimensions) => {
+          const { width, height } = dimensions;
           const imgObj = {
             url,
             width,
             height,
             name: file,
             path: url,
+            thumbUrl
           }
 
           images.push(imgObj);
           ++done;
-          input.destroy();
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           ++done;
-          input.destroy();
         })
         .finally(() => {
           if (done === count) {

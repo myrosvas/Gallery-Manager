@@ -1,7 +1,9 @@
 <template>
   <div class="quick-view">
     <div class="box">
-      <img :src="selected.url" alt />
+      <div class="img-container">
+        <v-lazy-image :src="selected.url" />
+      </div>
       <div class="metadata">
         <div class="text-left">
           <div v-if="selected.name">
@@ -16,19 +18,11 @@
             <b>path:</b>
             {{selected.path}}
           </div>
-          <div>
-            <b>astraId:</b>
-            {{selected.astraId ? selected.astraId : 'TBD'}}
-          </div>
         </div>
         <div class="text-right">
           <div>
-            <b>width:</b>
-            {{selected.width}}px
-          </div>
-          <div>
-            <b>height:</b>
-            {{selected.height}}px
+            <b>astraId:</b>
+            {{selected.astraId ? selected.astraId : 'TBD'}}
           </div>
           <div>
             <b>jobId:</b>
@@ -65,10 +59,20 @@
   background-color: rgba(0, 0, 0, 0.5);
   text-align: center;
 
+  .img-container {
+    min-height: 100px;
+  }
+
   img {
     display: block;
     margin-bottom: 10px;
     max-height: calc(90vh - 100px);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .v-lazy-image-loaded {
+    opacity: 1;
   }
 }
 

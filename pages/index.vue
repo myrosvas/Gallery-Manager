@@ -14,7 +14,7 @@
         <button v-if="isSavedDrive" @click="back">back</button>
         <button v-if="!isSavedDrive" @click="load('gallery1')">Load from Adobe</button>
         <button v-if="!isSavedDrive" @click="load('gallery2')">Load from Xinet</button>
-        <button v-if="!isSavedDrive" @click="load('gallery3')">Load from Aprimo</button>
+        <button v-if="!isSavedDrive" @click="load('test')">Load from Aprimo</button>
         <button v-if="!isSavedDrive" @click="load('saved')">My List</button>
         <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>

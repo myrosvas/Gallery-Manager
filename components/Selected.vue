@@ -3,9 +3,9 @@
     <div class="hint" v-if="!selected.length">No selected items</div>
     <div class="selected-grid" v-if="selected.length">
       <masonry :cols="2" :gutter="{default: '5px'}">
-        <div class="selected" v-for="item of selected" :key="item.path">
+        <div class="selected" v-for="(item, index) of selected" :key="index">
           <div class="remove" @click="remove(item)" title="remove">&times</div>
-          <img v-bind:src="item.url" alt />
+          <img :src="item.thumbUrl" alt />
         </div>
       </masonry>
     </div>

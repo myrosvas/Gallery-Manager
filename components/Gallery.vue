@@ -2,16 +2,16 @@
   <div class="gallery">
     <div class="gallery-nav">
       <div class="hint align-left" v-if="!items.length && !isLoading">Gallery is empty</div>
-      <div class="hint align-left" v-if="isLoading">Loading...</div>
       <div class="hint align-left" v-if="items.length && !isLoading">
         Count:
         <b>{{count}}</b>
       </div>
-      <div class="align-right">
+      <div class="loading align-right flex-center" v-if="isLoading"><i class="loading"></i> <span>Loading...</span></div>
+      <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
           <option v-for="item of sizes" :key="item">{{item}}</option>
         </select>
-      </div>
+      </div> -->
     </div>
 
     <!-- <div class="gallery-grid" :class="size"> -->
@@ -25,7 +25,10 @@
     >
       <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
         <div class="item" v-for="(item, index) of items" :key="index" :style="getStyle(item)">
-          <v-lazy-image :src="item.url" />
+          <!-- <v-lazy-image :srcset="item.thumbUrl" use-picture>
+          <source :srcset="item.thumbUrl" />
+          </v-lazy-image> -->
+          <v-lazy-image :src="item.thumbUrl" />
           <div class="over">
             <span class="icon see" title="open" @click="pick(item)"></span>
             <span v-if="!isSavedDrive" class="icon plus" title="select" @click="selectItem(item)"></span>
@@ -56,7 +59,7 @@ export default {
       isOpen: false,
       selected: null,
       sizes: ["small", "medium", "large"],
-      size: "medium",
+      size: "small",
       grid: {
         compact: {
           small: {
@@ -176,13 +179,7 @@ export default {
   padding-right: 12px;
 }
 
-// .masonry-container {
-// margin: 0 auto;
-// }
-
 .item {
-  // float: left;
-  // margin: 0 5px 5px 0;
   margin-bottom: 5px;
   display: flex;
   align-items: center;
@@ -192,14 +189,14 @@ export default {
   background-color: #f1f1f1;
 
   img {
+    display: block;
     position: absolute;
     top: 0;
     left: 0;
-    bottom: 0;
-    right: 0;
-    min-height: 1px;
-    visibility: hidden;
+    width: 100%;
+    height: 100%;
     opacity: 0;
+    visibility: hidden;
     transition: opacity 0.15s;
 
     &.v-lazy-image-loaded {

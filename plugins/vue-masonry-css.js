@@ -106,12 +106,11 @@ const component = {
     // Recalculate how many columns to display based on window width
     // and the value of the passed `:cols=` prop
     reCalculate(event) {
+      const previousWindowWidth = this.windowWidth;
+      this.windowWidth = (window ? window.innerWidth : null) || Infinity;
+
+      // check current and prev window width only if resize event is fired
       if (event) {
-        // check current and prev window width only if resize event is fired
-        const previousWindowWidth = this.windowWidth;
-
-        this.windowWidth = (window ? window.innerWidth : null) || Infinity;
-
         // Window resize events get triggered on page height
         // change which when loading the page can result in multiple
         // needless calculations. We prevent this here.

@@ -92,3 +92,4 @@ sw.*
 # generated files
 static/saved
 static/test
+static/thumb
