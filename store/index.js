@@ -17,7 +17,7 @@ export const actions = {
     const items = await this.$axios.$get(`/api/load?drive=${drive}`);
     const t1 = performance.now();
 
-    console.log('load items took' + (t1 - t0) + ' milliseconds');
+    console.log(`load items took: ${t1 - t0} milliseconds`);
 
     if (state.items.length) {
       commit('changeInterval');

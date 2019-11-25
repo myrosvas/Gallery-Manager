@@ -10,16 +10,20 @@
             <b>name:</b>
             {{selected.name}}
           </div>
-          <div v-if="selected.lastModified">
-            <b>last modified:</b>
-            {{selected.lastModified | date}}
-          </div>
           <div>
             <b>path:</b>
             {{selected.url}}
           </div>
+          <div v-if="selected.mtime">
+            <b>last modified:</b>
+            {{selected.mtime | date}}
+          </div>
         </div>
         <div class="text-right">
+          <div v-if="selected.size">
+            <b>size:</b>
+            {{selected.size | kb }} KB
+          </div>
           <div>
             <b>astraId:</b>
             {{selected.astraId ? selected.astraId : 'TBD'}}
@@ -27,14 +31,6 @@
           <div>
             <b>jobId:</b>
             {{selected.jobId ? selected.jobId : 'TBD'}}
-          </div>
-          <div v-if="selected.type">
-            <b>type:</b>
-            {{selected.type}}
-          </div>
-          <div v-if="selected.size">
-            <b>size:</b>
-            {{selected.size | kb }} KB
           </div>
         </div>
       </div>
