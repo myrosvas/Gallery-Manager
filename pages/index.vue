@@ -77,7 +77,6 @@ export default {
               lastModified,
               type,
               size,
-              path: e.target.result,
               jobId: null,
               astraId: null
             };

@@ -64,7 +64,7 @@ export default {
         compact: {
           small: {
             cols: { default: 8, 1000: 7, 700: 6 },
-            limit: 50,
+            limit: 60,
             step: 20
           },
           medium: {
@@ -81,7 +81,7 @@ export default {
         extend: {
           small: {
             cols: { default: 10, 1000: 8, 700: 7 },
-            limit: 60,
+            limit: 70,
             step: 20
           },
           medium: {

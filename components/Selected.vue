@@ -61,8 +61,8 @@ export default {
     ...mapMutations({
       removeItem: "selected/remove"
     }),
-    remove({ path }) {
-      this.removeItem(path);
+    remove({ url }) {
+      this.removeItem(url);
     }
   }
 };

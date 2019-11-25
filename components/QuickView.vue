@@ -16,7 +16,7 @@
           </div>
           <div>
             <b>path:</b>
-            {{selected.path}}
+            {{selected.url}}
           </div>
         </div>
         <div class="text-right">
@@ -61,12 +61,12 @@
 
   .img-container {
     min-height: 100px;
+    text-align: center;
   }
 
   img {
-    display: block;
     margin-bottom: 10px;
-    max-height: calc(90vh - 100px);
+    max-height: calc(100vh - 180px);
     opacity: 0;
     transition: opacity 0.15s;
   }
@@ -81,7 +81,7 @@
   background-color: #fff;
   padding: 20px;
   max-width: 90%;
-  max-height: calc(100vh - 20px);
+  max-height: 100%;
 }
 
 .close {

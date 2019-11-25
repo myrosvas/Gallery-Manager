@@ -32,7 +32,7 @@ module.exports = {
     { src: '~/plugins/vue-infinite-scroll', mode: 'client' },
     // { src: '~/plugins/vue-masonry', mode: 'client' },
     // { src: '~/plugins/vue-masonry-css', mode: 'client' },
-    { src: '~/plugins/vue-masonry-css', mode: 'client' },
+    { src: '~/plugins/vue-masonry-css' },
     { src: '~/plugins/v-lazy-image', mode: 'client' },
   ],
   /*

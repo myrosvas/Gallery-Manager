@@ -55,7 +55,6 @@ export default function (req, res, next) {
             width,
             height,
             name: file,
-            path: url,
             thumbUrl
           }
 

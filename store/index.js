@@ -13,21 +13,25 @@ export const actions = {
     if (isSavedDrive) {
       commit('save');
     }
+    const t0 = performance.now();
     const items = await this.$axios.$get(`/api/load?drive=${drive}`);
+    const t1 = performance.now();
+
+    console.log('load items took' + (t1 - t0) + ' milliseconds');
 
     if (state.items.length) {
       commit('changeInterval');
     }
     commit('add', items);
   },
-  async removeFromSaved({ state, commit }, { path, name }) {
+  async removeFromSaved({ state, commit }, { url, name }) {
     try {
-      await this.$axios.$post("/api/remove", { path });
+      await this.$axios.$post("/api/remove", { url });
     } catch (e) {
       return this.$toast.error("Server Error");
     }
 
-    commit('remove', path);
+    commit('remove', url);
     commit('selected/remove', name);
     this.$toast.success("REMOVED");
   }
@@ -48,8 +52,8 @@ export const mutations = {
   revert(state) {
     state.items = state.prevItems;
   },
-  remove(state, path) {
-    state.items = state.items.filter(item => item.path !== path);
+  remove(state, url) {
+    state.items = state.items.filter(item => item.url !== url);
   },
   changeInterval(state, payload) {
     if (payload) {
@@ -65,7 +69,7 @@ export const mutations = {
 
 export const getters = {
   filteredItems(state) {
-    return uniq(state.items, item => item.path);
+    return uniq(state.items, item => item.url);
   },
   count: (state, getters) => getters.filteredItems.length,
   limited(state) {
