@@ -16,9 +16,11 @@ export const actions = {
     const t0 = performance.now();
     const items = await this.$axios.$get(`/api/load?drive=${drive}`);
     const t1 = performance.now();
-
     console.log(`load items took: ${t1 - t0} milliseconds`);
 
+    if (!items.length) {
+      return this.$toast.info("no items to add");
+    };
     if (state.items.length) {
       commit('changeInterval');
     }
@@ -72,8 +74,8 @@ export const getters = {
     return uniq(state.items, item => item.url);
   },
   count: (state, getters) => getters.filteredItems.length,
-  limited(state) {
-    const next = state.items.slice(0, state.limit);
+  limited(state, getters) {
+    const next = getters.filteredItems.slice(0, state.limit);
 
     return state.list.concat(next);
   }
