@@ -33,6 +33,7 @@ module.exports = {
     // { src: '~/plugins/vue-masonry', mode: 'client' },
     // { src: '~/plugins/vue-masonry-css', mode: 'client' },
     { src: '~/plugins/vue-masonry-css' },
+    { src: '~/plugins/vue-virtual-scroll-list' },
     { src: '~/plugins/v-lazy-image', mode: 'client' },
   ],
   /*

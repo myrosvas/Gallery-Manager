@@ -6,41 +6,57 @@
         Count:
         <b>{{count}}</b>
       </div>
-      <div class="loading align-right flex-center" v-if="isLoading"><i class="loading"></i> <span>Loading...</span></div>
+      <div class="loading align-right flex-center" v-if="isLoading">
+        <i class="loading"></i>
+        <span>Loading...</span>
+      </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
           <option v-for="item of sizes" :key="item">{{item}}</option>
         </select>
-      </div> -->
+      </div>-->
     </div>
 
-    <!-- <div class="gallery-grid" :class="size"> -->
+    <div v-if="0" class="gallery-list" ref="list">
+      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
+        <ListItem
+          v-for="item in items"
+          :key="item.thumbUrl"
+          :item="item"
+          :style="{ height: item.height + 'px' }"
+        />
+      </virtual-list>
+    </div>
+
     <div
+      v-if="1"
       class="gallery-grid"
       v-infinite-scroll="append"
       infinite-scroll-disabled="busy"
       infinite-scroll-immediate-check="true"
       infinite-scroll-distance="400"
       :class="size"
+      @mouseleave="hideActions"
     >
-      <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
-        <div class="item" v-for="(item, index) of items" :key="index" :style="getStyle(item)">
-          <!-- <v-lazy-image :srcset="item.thumbUrl" use-picture>
-          <source :srcset="item.thumbUrl" />
-          </v-lazy-image> -->
-          <v-lazy-image :src="item.thumbUrl" />
-          <div class="over">
-            <span class="icon see" title="open" @click="pick(item)"></span>
-            <span v-if="!isSavedDrive" class="icon plus" title="select" @click="selectItem(item)"></span>
-            <span
-              v-if="isSavedDrive"
-              class="icon cross"
-              title="remove"
-              @click="removeFromSaved(item)"
-            ></span>
-          </div>
-        </div>
-      </masonry>
+      <div @mouseover="showActions">
+        <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
+          <GridItem
+            v-for="(item, index) in items"
+            :key="index"
+            :item="item"
+            :isNativeLoading="isNativeLoading"
+            :style="{ 'padding-bottom': (item.height / item.width * 100) + '%' }"
+          />
+        </masonry>
+      </div>
+
+      <HoverActions
+        :isSavedDrive="isSavedDrive"
+        :data="picked"
+        @pick="pick()"
+        @select="select()"
+        @remove="remove()"
+      />
     </div>
     <QuickView v-if="isOpen" :selected="selected" :isSavedDrive="isSavedDrive" @close="close" />
   </div>
@@ -48,23 +64,42 @@
 
 <script>
 import QuickView from "~/components/QuickView.vue";
+import ListItem from "~/components/ListItem.vue";
+import GridItem from "~/components/GridItem.vue";
+import HoverActions from "~/components/HoverActions.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
+// import { debounce } from "underscore";
 
 export default {
   components: {
-    QuickView
+    QuickView,
+    ListItem,
+    GridItem,
+    HoverActions
   },
   data: () => {
     return {
       isOpen: false,
+      isNativeLoading:
+        typeof window !== "undefined"
+          ? "loading" in window.HTMLImageElement.prototype
+          : false,
       selected: null,
       sizes: ["small", "medium", "large"],
       size: "small",
+      list: {
+        remain: 8,
+        height: 0,
+        initialHeight: 110,
+        bench: 30
+      },
+      // debounceActions: () => {},
+      picked: null,
       grid: {
         compact: {
           small: {
             cols: { default: 8, 1000: 7, 700: 6 },
-            limit: 60,
+            limit: 80,
             step: 20
           },
           medium: {
@@ -109,8 +144,12 @@ export default {
         : this.grid.compact[this.size].cols;
     }
   },
+  beforeMount() {
+    // this.debounceActions = debounce(this.showActions.bind(this), 10);
+  },
   mounted() {
     this.reset();
+    this.calcListItemsToShow();
   },
   watch: {
     isSavedDrive: function() {
@@ -124,8 +163,26 @@ export default {
       changeInterval: "changeInterval"
     }),
     pick(item) {
-      this.selected = item;
+      if (item) {
+        this.selected = item;
+      } else {
+        this.selected = this.items.find(
+          ({ thumbUrl }) => thumbUrl === this.picked.url
+        );
+      }
       this.isOpen = true;
+    },
+    select() {
+      const item = this.items.find(
+        ({ thumbUrl }) => thumbUrl === this.picked.url
+      );
+      this.selectItem(item);
+    },
+    remove() {
+      const item = this.items.find(
+        ({ thumbUrl }) => thumbUrl === this.picked.url
+      );
+      this.removeFromSaved(item);
     },
     close() {
       this.isOpen = false;
@@ -146,11 +203,46 @@ export default {
         : this.grid.compact[this.size].step;
       this.changeInterval({ limit, step });
     },
-    getStyle({ height, width, url }) {
-      return {
-        "padding-bottom": `${(height / width) * 100}%`
-        // "background-image": `url(${url})`
-      };
+    calcListItemsToShow() {
+      if (this.$refs.list) {
+        const height = this.$refs.list.offsetHeight;
+
+        this.list.remain = Math.floor(height / this.list.initialHeight);
+        this.list.height =
+          this.list.initialHeight +
+          Math.floor(
+            (height - this.list.remain * this.list.initialHeight) /
+              this.list.remain
+          );
+      }
+    },
+    showActions(e) {
+      const $target = e.target;
+
+      if (
+        $target.tagName === "SPAN" ||
+        $target.classList.contains("hover-actions")
+      ) {
+        return false;
+      }
+
+      if ($target.tagName === "IMG") {
+        const url = $target.getAttribute("src");
+        const { width, height } = $target;
+        const { offsetTop, offsetLeft } = $target.parentNode;
+        this.picked = {
+          url,
+          width,
+          height,
+          offsetTop,
+          offsetLeft
+        };
+      } else {
+        this.picked = null;
+      }
+    },
+    hideActions() {
+      this.picked = null;
     }
   }
 };
@@ -164,6 +256,15 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0 0 7px 12px;
+
+  &-list {
+    flex: 1;
+    overflow: hidden;
+
+    & > div {
+      padding-right: 12px;
+    }
+  }
 }
 
 .gallery-nav {
@@ -177,84 +278,10 @@ export default {
   overflow-y: auto;
   flex: 1;
   padding-right: 12px;
-}
-
-.item {
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
-  background-size: 100%;
-  background-color: #f1f1f1;
 
-  img {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+  & > div {
     height: 100%;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s;
-
-    &.v-lazy-image-loaded {
-      visibility: visible;
-      opacity: 1;
-
-      & + .over {
-        display: flex;
-      }
-    }
-  }
-
-  &:hover .over {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.over {
-  display: none;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.02s 0.09s;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.see {
-  background-image: url("~assets/icons/look.svg");
-  background-size: 65%;
-}
-
-.plus {
-  background-image: url("~assets/icons/plus.svg");
-}
-
-.cross {
-  background-image: url("~assets/icons/cross.svg");
-}
-
-.item {
-  .small & {
-    // max-width: 100px;
-  }
-
-  .medium & {
-    // max-width: 150px;
-  }
-
-  .large & {
-    // max-width: 200px;
   }
 }
 </style>
