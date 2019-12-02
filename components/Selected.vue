@@ -15,8 +15,10 @@
 <style lang="scss">
 .list {
   margin-left: 20px;
-  flex: 0 0 330px;
+  flex: 0 0 290px;
   padding: 14px 0 9px 12px;
+  border-radius: 5px;
+  box-shadow: 0 13px 20px -6px rgba(0,0,0,0.1);
 }
 
 .selected {
@@ -36,17 +38,18 @@
 .remove {
   display: block;
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   line-height: 16px;
-  top: 5px;
-  right: 3px;
+  top: 4px;
+  right: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #e1192b;
+  color: #fff;
+  background-color: #000;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 20px;
 }
 </style>
 

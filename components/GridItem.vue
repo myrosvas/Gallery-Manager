@@ -2,11 +2,6 @@
   <div class="grid-item">
     <img v-if="isNativeLoading" :src="item.thumbUrl" loading="lazy" />
     <v-lazy-image v-if="!isNativeLoading" :src="item.thumbUrl" />
-    <!-- <div class="over">
-      <span class="icon see" title="open" @click="pick(item)"></span>
-      <span v-if="!isSavedDrive" class="icon plus" title="select" @click="selectItem(item)"></span>
-      <span v-if="isSavedDrive" class="icon cross" title="remove" @click="removeFromSaved(item)"></span>
-    </div>-->
   </div>
 </template>
 
@@ -17,7 +12,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  background-size: 100%;
   background-color: #f1f1f1;
 
   img {

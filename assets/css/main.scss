@@ -47,3 +47,16 @@ body .g-toast.top-center {
   margin: 5px;
   cursor: pointer;
 }
+
+.see {
+  background-image: url("~assets/icons/look.svg");
+  background-size: 65%;
+}
+
+.plus {
+  background-image: url("~assets/icons/plus.svg");
+}
+
+.cross {
+  background-image: url("~assets/icons/cross.svg");
+}

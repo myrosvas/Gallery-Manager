@@ -43,7 +43,7 @@ export default async (req, res, next) => {
 
     try {
       dimensions = await sharp(fullPath)
-        .resize(150)
+        .resize(140)
         .webp()
         .toFile(fullThumbUrl);
     } catch (e) {

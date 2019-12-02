@@ -2,7 +2,6 @@ import { uniq } from "underscore";
 
 export const state = () => ({
   items: [],
-  list: [],
   prevItems: [],
   limit: 0,
   step: 0,
@@ -75,9 +74,7 @@ export const getters = {
   },
   count: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
-    const next = getters.filteredItems.slice(0, state.limit);
-
-    return state.list.concat(next);
+    return getters.filteredItems.slice(0, state.limit);
   }
   // limited: (state, getters) => getters.filteredItems,
 }

@@ -25,19 +25,6 @@
     // transition: opacity .05s .1s;
   }
 }
-
-.see {
-  background-image: url("~assets/icons/look.svg");
-  background-size: 65%;
-}
-
-.plus {
-  background-image: url("~assets/icons/plus.svg");
-}
-
-.cross {
-  background-image: url("~assets/icons/cross.svg");
-}
 </style>
 
 <script>

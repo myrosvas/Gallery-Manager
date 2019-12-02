@@ -1,14 +1,49 @@
 <template>
   <div class="gallery">
     <div class="gallery-nav">
-      <div class="hint align-left" v-if="!items.length && !isLoading">Gallery is empty</div>
-      <div class="hint align-left" v-if="items.length && !isLoading">
-        Count:
-        <b>{{count}}</b>
+      <div class="flex-center">
+        <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
+        <div class="hint" v-if="count && !isLoading">
+          Count:
+          <b>{{count}}</b>
+        </div>
       </div>
-      <div class="loading align-right flex-center" v-if="isLoading">
-        <i class="loading"></i>
-        <span>Loading...</span>
+      <div class="flex-center">
+        <div v-if="isLoading" class="loading flex-center">
+          <i class="loading"></i>
+          <span>Loading...</span>
+        </div>
+        <div v-if="count" class="view-controls flex-center">
+          <div
+            class="icon-grid"
+            @click="activateGridView"
+            :class="{active: isGridView}"
+            title="grid view"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div
+            class="icon-list"
+            @click="activateListView"
+            :class="{active: isListView}"
+            title="list view"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
@@ -17,31 +52,19 @@
       </div>-->
     </div>
 
-    <div v-if="0" class="gallery-list" ref="list">
-      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
-        <ListItem
-          v-for="item in items"
-          :key="item.thumbUrl"
-          :item="item"
-          :style="{ height: item.height + 'px' }"
-        />
-      </virtual-list>
-    </div>
-
     <div
-      v-if="1"
       class="gallery-grid"
+      :class="{size, 'grid-disabled': !isGridView}"
       v-infinite-scroll="append"
       infinite-scroll-disabled="busy"
       infinite-scroll-immediate-check="true"
       infinite-scroll-distance="400"
-      :class="size"
       @mouseleave="hideActions"
     >
-      <div @mouseover="showActions">
+      <div v-if="isGridView" @mouseover="showActions">
         <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
           <GridItem
-            v-for="(item, index) in items"
+            v-for="(item, index) in limited"
             :key="index"
             :item="item"
             :isNativeLoading="isNativeLoading"
@@ -51,6 +74,7 @@
       </div>
 
       <HoverActions
+        v-if="isGridView"
         :isSavedDrive="isSavedDrive"
         :data="picked"
         @pick="pick()"
@@ -58,6 +82,23 @@
         @remove="remove()"
       />
     </div>
+
+    <div v-if="isListView" class="gallery-list" ref="list">
+      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
+        <ListItem
+          v-for="item in items"
+          :key="item.thumbUrl"
+          :item="item"
+          :isNativeLoading="isNativeLoading"
+          :isSavedDrive="isSavedDrive"
+          :minHeight="list.height"
+          @pick="pick"
+          @select="selectItem"
+          @remove="removeFromSaved"
+        />
+      </virtual-list>
+    </div>
+
     <QuickView v-if="isOpen" :selected="selected" :isSavedDrive="isSavedDrive" @close="close" />
   </div>
 </template>
@@ -80,60 +121,61 @@ export default {
   data: () => {
     return {
       isOpen: false,
+      isGridView: true,
+      isListView: false,
       isNativeLoading:
         typeof window !== "undefined"
           ? "loading" in window.HTMLImageElement.prototype
           : false,
       selected: null,
-      sizes: ["small", "medium", "large"],
       size: "small",
-      list: {
-        remain: 8,
-        height: 0,
-        initialHeight: 110,
-        bench: 30
-      },
-      // debounceActions: () => {},
       picked: null,
+      // debounceActions: () => {},
+      list: {
+        remain: 10,
+        height: 0,
+        initialHeight: 80,
+        bench: 20
+      },
       grid: {
         compact: {
           small: {
-            cols: { default: 8, 1000: 7, 700: 6 },
+            cols: {
+              default: 9,
+              1340: 8,
+              1240: 7,
+              1140: 6,
+              940: 5,
+              840: 4,
+              740: 3,
+              640: 2,
+              540: 1
+            },
             limit: 80,
             step: 20
-          },
-          medium: {
-            cols: { default: 6, 1000: 5, 700: 4 },
-            limit: 40,
-            step: 20
-          },
-          large: {
-            cols: { default: 4, 1000: 3, 700: 2 },
-            limit: 30,
-            step: 15
           }
         },
         extend: {
           small: {
-            cols: { default: 10, 1000: 8, 700: 7 },
+            cols: {
+              default: 11,
+              1340: 10,
+              1240: 9,
+              1140: 8,
+              940: 7,
+              840: 6,
+              740: 5,
+              640: 4,
+              540: 3
+            },
             limit: 70,
             step: 20
-          },
-          medium: {
-            cols: { default: 8, 1000: 7, 700: 5 },
-            limit: 50,
-            step: 20
-          },
-          large: {
-            cols: { default: 6, 1000: 4, 700: 3 },
-            limit: 40,
-            step: 15
           }
         }
       }
     };
   },
-  props: ["items", "isSavedDrive", "isLoading"],
+  props: ["items", "limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
       count: "count"
@@ -148,12 +190,18 @@ export default {
     // this.debounceActions = debounce(this.showActions.bind(this), 10);
   },
   mounted() {
-    this.reset();
-    this.calcListItemsToShow();
+    if (this.isGridView) {
+      this.resetGridView();
+    }
+    if (this.isListView) {
+      this.resetListView();
+    }
   },
   watch: {
     isSavedDrive: function() {
-      this.reset();
+      if (this.isGridView) {
+        this.resetGridView();
+      }
     }
   },
   methods: {
@@ -194,7 +242,7 @@ export default {
         this.busy = false;
       }, 150);
     },
-    reset() {
+    resetGridView() {
       const limit = this.isSavedDrive
         ? this.grid.extend[this.size].limit
         : this.grid.compact[this.size].limit;
@@ -203,7 +251,7 @@ export default {
         : this.grid.compact[this.size].step;
       this.changeInterval({ limit, step });
     },
-    calcListItemsToShow() {
+    resetListView() {
       if (this.$refs.list) {
         const height = this.$refs.list.offsetHeight;
 
@@ -243,6 +291,20 @@ export default {
     },
     hideActions() {
       this.picked = null;
+    },
+    activateGridView() {
+      if (this.isGridView) return;
+
+      this.resetGridView();
+      this.isListView = false;
+      this.isGridView = true;
+    },
+    activateListView() {
+      if (this.isListView) return;
+
+      this.isGridView = false;
+      this.isListView = true;
+      this.$nextTick(() => this.resetListView());
     }
   }
 };
@@ -256,6 +318,8 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0 0 7px 12px;
+  border-radius: 5px;
+  box-shadow: 0 13px 20px -6px rgba(0, 0, 0, 0.1);
 
   &-list {
     flex: 1;
@@ -272,6 +336,7 @@ export default {
   display: flex;
   padding-right: 12px;
   align-items: center;
+  justify-content: space-between;
 }
 
 .gallery-grid {
@@ -280,8 +345,134 @@ export default {
   padding-right: 12px;
   position: relative;
 
-  & > div {
+  & > div:first-child {
     height: 100%;
+  }
+}
+
+.grid-disabled {
+  flex: 0;
+  visibility: hidden;
+  & > div {
+    height: auto;
+  }
+}
+
+.view-controls {
+  margin-left: 20px;
+
+  div {
+    height: 24px;
+    border: 1px solid #dadada;
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+
+    &.active {
+      cursor: default;
+      background-color: #fff;
+      span {
+        background-color: #000;
+      }
+    }
+
+    span {
+      display: block;
+      position: absolute;
+      width: 5px;
+      height: 4px;
+      background-color: #dadada;
+    }
+  }
+}
+
+.icon-grid {
+  width: 29px;
+  z-index: 2;
+  border-radius: 2px 0 0 2px;
+
+  &.active + div {
+    border-left: 1px solid #fff;
+  }
+  span:nth-child(1) {
+    top: 2px;
+    left: 3px;
+  }
+
+  span:nth-child(2) {
+    top: 2px;
+    left: 11px;
+  }
+
+  span:nth-child(3) {
+    top: 2px;
+    left: 19px;
+  }
+  span:nth-child(4) {
+    top: 9px;
+    left: 3px;
+  }
+
+  span:nth-child(5) {
+    top: 9px;
+    left: 11px;
+  }
+
+  span:nth-child(6) {
+    top: 9px;
+    left: 19px;
+  }
+  span:nth-child(7) {
+    top: 16px;
+    left: 3px;
+  }
+
+  span:nth-child(8) {
+    top: 16px;
+    left: 11px;
+  }
+
+  span:nth-child(9) {
+    top: 16px;
+    left: 19px;
+  }
+}
+
+.icon-list {
+  width: 28px;
+  border-radius: 0 2px 2px 0;
+  left: -1px;
+
+  div + &.active {
+    border-left: 1px solid #fff;
+  }
+  span:nth-child(1) {
+    top: 2px;
+    left: 3px;
+  }
+  span:nth-child(2) {
+    top: 2px;
+    left: 10px;
+    width: 13px;
+  }
+  span:nth-child(3) {
+    top: 9px;
+    left: 3px;
+  }
+  span:nth-child(4) {
+    top: 9px;
+    left: 10px;
+    width: 13px;
+  }
+
+  span:nth-child(5) {
+    top: 16px;
+    left: 3px;
+  }
+  span:nth-child(6) {
+    top: 16px;
+    left: 10px;
+    width: 13px;
   }
 }
 </style>
