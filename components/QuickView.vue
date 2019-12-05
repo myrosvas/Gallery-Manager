@@ -1,38 +1,36 @@
 <template>
   <div class="quick-view">
     <div class="box">
-      <img :src="selected.url" alt />
+      <div class="img-container">
+        <v-lazy-image :src="selected.url" />
+      </div>
       <div class="metadata">
         <div class="text-left">
           <div v-if="selected.name">
             <b>name:</b>
             {{selected.name}}
           </div>
-          <div v-if="selected.lastModified">
-            <b>last modified:</b>
-            {{selected.lastModified | date}}
-          </div>
           <div>
             <b>path:</b>
-            {{selected.path}}
+            {{selected.url}}
+          </div>
+          <div v-if="selected.mtime">
+            <b>last modified:</b>
+            {{selected.mtime | date}}
           </div>
         </div>
         <div class="text-right">
-          <div>
-            <b>jobId:</b>
-            {{selected.jobId ? selected.jobId : 'TBD'}}
+          <div v-if="selected.size">
+            <b>size:</b>
+            {{selected.size | kb }} KB
           </div>
           <div>
             <b>astraId:</b>
             {{selected.astraId ? selected.astraId : 'TBD'}}
           </div>
-          <div v-if="selected.type">
-            <b>type:</b>
-            {{selected.type}}
-          </div>
-          <div v-if="selected.size">
-            <b>size:</b>
-            {{selected.size | kb }} KB
+          <div>
+            <b>jobId:</b>
+            {{selected.jobId ? selected.jobId : 'TBD'}}
           </div>
         </div>
       </div>
@@ -57,10 +55,20 @@
   background-color: rgba(0, 0, 0, 0.5);
   text-align: center;
 
+  .img-container {
+    min-height: 100px;
+    text-align: center;
+  }
+
   img {
-    display: block;
     margin-bottom: 10px;
-    max-height: calc(90vh - 100px);
+    max-height: calc(100vh - 180px);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .v-lazy-image-loaded {
+    opacity: 1;
   }
 }
 
@@ -69,7 +77,7 @@
   background-color: #fff;
   padding: 20px;
   max-width: 90%;
-  max-height: calc(100vh - 20px);
+  max-height: 100%;
 }
 
 .close {

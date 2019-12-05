@@ -4,7 +4,7 @@
 
 select {
   font-weight: normal;
-  color: #333;
+  color: $default;
   outline: none;
   cursor: pointer;
 }
@@ -17,6 +17,25 @@ body .g-toast.top-center {
   color: $grey;
 }
 
+.loading {
+  font-size: 16px;
+  color: $grey;
+
+  i {
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 90%;
+    margin-right: 5px;
+    opacity: 0.6;
+    background-image: url("~assets/icons/loading.svg");
+  }
+}
+
 .icon {
   display: block;
   width: 36px;
@@ -27,4 +46,17 @@ body .g-toast.top-center {
   background-color: rgba(0, 0, 0, 0.9);
   margin: 5px;
   cursor: pointer;
+}
+
+.see {
+  background-image: url("~assets/icons/look.svg");
+  background-size: 65%;
+}
+
+.plus {
+  background-image: url("~assets/icons/plus.svg");
+}
+
+.cross {
+  background-image: url("~assets/icons/cross.svg");
 }

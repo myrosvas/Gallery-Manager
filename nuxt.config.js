@@ -29,6 +29,12 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vue-infinite-scroll', mode: 'client' },
+    // { src: '~/plugins/vue-masonry', mode: 'client' },
+    // { src: '~/plugins/vue-masonry-css', mode: 'client' },
+    { src: '~/plugins/vue-masonry-css' },
+    { src: '~/plugins/vue-virtual-scroll-list' },
+    { src: '~/plugins/v-lazy-image', mode: 'client' },
   ],
   /*
   ** Nuxt.js dev-modules
@@ -60,6 +66,16 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
+    }
+  },
+  render: {
+    static: {
+      cacheControl: true,
+      maxAge: 60 * 60 * 24 * 7,
+      lastModified: true,
+      etag: true,
+      // setHeaders(res) {
+      //   res.setHeader('X-Frame-Options', 'ALLOWALL')
     }
   }
 }

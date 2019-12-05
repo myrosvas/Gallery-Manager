@@ -13,8 +13,8 @@
         </div>-->
         <button v-if="isSavedDrive" @click="back">back</button>
         <button v-if="!isSavedDrive" @click="load('gallery1')">Load from Adobe</button>
-        <button v-if="!isSavedDrive" @click="load('gallery2')">Load from Xinet</button>
-        <button v-if="!isSavedDrive" @click="load('gallery3')">Load from Aprimo</button>
+        <button v-if="!isSavedDrive" @click="load('all')">Load from Xinet</button>
+        <button v-if="!isSavedDrive" @click="load('test')">Load from Aprimo</button>
         <button v-if="!isSavedDrive" @click="load('saved')">My List</button>
         <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>
@@ -23,7 +23,7 @@
     </header>
 
     <section>
-      <Gallery :items="items" :isSavedDrive="isSavedDrive" />
+      <Gallery :items="items" :limited="limited" :isSavedDrive="isSavedDrive" :isLoading="isLoading" />
       <Selected v-if="!isSavedDrive" />
     </section>
   </div>
@@ -42,11 +42,13 @@ export default {
   data() {
     return {
       isRemoteFiles: true,
-      isSavedDrive: false
+      isSavedDrive: false,
+      isLoading: false
     };
   },
   computed: mapGetters({
     items: "filteredItems",
+    limited: "limited",
     selected: "selected/filtered"
   }),
   methods: {
@@ -73,10 +75,9 @@ export default {
             const model = {
               url: e.target.result,
               name,
-              lastModified,
+              mtime: lastModified,
               type,
               size,
-              path: e.target.result,
               jobId: null,
               astraId: null
             };
@@ -91,12 +92,14 @@ export default {
     },
     async load(drive) {
       // this.isRemoteFiles = true;
+      this.isLoading = true;
       if (this.isSavedDrive) {
         this.drop();
       }
       this.isSavedDrive = drive === "saved";
       try {
         await this.loadItems({ drive, isSavedDrive: this.isSavedDrive });
+        this.isLoading = false;
       } catch (e) {
         console.log(e);
       }
