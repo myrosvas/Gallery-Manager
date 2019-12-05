@@ -69,42 +69,25 @@
 </style>
 
 <script>
+import { itemMixin } from "~/mixins/itemMixin";
+import { metadataMixin } from "~/mixins/metadataMixin";
+
 export default {
+  mixins: [itemMixin, metadataMixin],
   props: {
     isSavedDrive: Boolean,
-    isNativeLoading: Boolean,
     minHeight: {
       type: Number,
       default: 0
-    },
-    item: {
-      type: Object,
-      default: () => ({
-        url: "",
-        width: 0,
-        height: 0,
-        name: "",
-        thumbUrl: "",
-        size: 0,
-        mtime: ""
-      })
     }
   },
   computed: {
     style() {
-      const h = Math.ceil(110 * this.item.height / this.item.width) + 6;
+      const h = Math.ceil((110 * this.item.height) / this.item.width) + 6;
 
       return h < this.minHeight
         ? { height: this.minHeight + "px" }
         : { height: h + "px" };
-    }
-  },
-  filters: {
-    date(time) {
-      return new Date(time).toLocaleString();
-    },
-    kb(size) {
-      return Math.ceil(size / 1024);
     }
   }
 };

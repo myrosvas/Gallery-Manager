@@ -73,24 +73,9 @@
 </style>
 
 <script>
+import { itemMixin } from "~/mixins/itemMixin";
+
 export default {
-  props: {
-    isNativeLoading: {
-      type: Boolean,
-      default: false
-    },
-    item: {
-      type: Object,
-      default: () => ({
-        url: "",
-        width: 0,
-        height: 0,
-        name: "",
-        thumbUrl: "",
-        size: 0,
-        mtime: ""
-      })
-    }
-  }
+  mixins: [itemMixin]
 };
 </script>
