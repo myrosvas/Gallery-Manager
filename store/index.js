@@ -34,14 +34,14 @@ export const actions = {
 
     commit('remove', url);
     commit('selected/remove', name);
-    this.$toast.success("REMOVED");
+    this.$toast.success("Removed from the list");
   }
 }
 
 export const mutations = {
   add(state, items) {
     state.items = state.items.concat(items);
-    setTimeout(() => this.$toast.success('LOADED'), 400);
+    setTimeout(() => this.$toast.success('Added to the gallery'), 400);
   },
   save(state) {
     state.prevItems = state.items;

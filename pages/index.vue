@@ -1,10 +1,7 @@
 <template>
   <div class="container">
     <header>
-      <div class="logo">
-        <a href>Gallery Manager</a>
-        <span v-if="isSavedDrive">/ Saved</span>
-      </div>
+      <Logo />
       <nav>
         <!-- TODO: upload from the local disc -->
         <!-- <div class="file">
@@ -12,10 +9,21 @@
           <input type="file" id="upload" ref="uploads" @change="upload" multiple />
         </div>-->
         <button v-if="isSavedDrive" @click="back">back</button>
-        <button v-if="!isSavedDrive" @click="load('gallery1')">Load from Adobe</button>
-        <button v-if="!isSavedDrive" @click="load('all')">Load from Xinet</button>
-        <button v-if="!isSavedDrive" @click="load('test')">Load from Aprimo</button>
-        <button v-if="!isSavedDrive" @click="load('saved')">My List</button>
+        <select
+          class="location"
+          v-if="!isSavedDrive"
+          v-model="location"
+          :class="{disabled: isLoading}"
+          :disabled="isLoading"
+        >
+          <option
+            v-for="(item, index) in locations"
+            :key="item.path"
+            :value="item.path"
+            :disabled="index === 0"
+          >{{item.name}}</option>
+        </select>
+        <button v-if="!isSavedDrive" @click="load(myListLocation)">My List</button>
         <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Commit Selected</button>
@@ -23,19 +31,27 @@
     </header>
 
     <section>
-      <Gallery :items="items" :limited="limited" :isSavedDrive="isSavedDrive" :isLoading="isLoading" />
+      <Gallery
+        :items="items"
+        :limited="limited"
+        :isSavedDrive="isSavedDrive"
+        :isLoading="isLoading"
+      />
       <Selected v-if="!isSavedDrive" />
     </section>
   </div>
 </template>
 
 <script>
+import Logo from "~/components/Logo.vue";
 import Gallery from "~/components/Gallery.vue";
 import Selected from "~/components/Selected.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
+import { locations, myListLocation } from "~/config/locations.config";
 
 export default {
   components: {
+    Logo,
     Gallery,
     Selected
   },
@@ -43,8 +59,18 @@ export default {
     return {
       isRemoteFiles: true,
       isSavedDrive: false,
-      isLoading: false
+      isLoading: false,
+      location: null,
+      myListLocation,
+      locations: [{ name: "choose location", path: null }, ...locations]
     };
+  },
+  watch: {
+    location(path) {
+      if (path) {
+        this.load(path);
+      }
+    }
   },
   computed: mapGetters({
     items: "filteredItems",
@@ -134,16 +160,6 @@ header {
   justify-content: space-between;
 }
 
-.logo {
-  font-size: 26px;
-  font-weight: bold;
-
-  span {
-    font-size: 20px;
-    color: #666;
-  }
-}
-
 section {
   display: flex;
 }
@@ -182,5 +198,20 @@ section > div {
   opacity: 0;
   position: absolute;
   z-index: -1;
+}
+
+.location {
+  height: 30px;
+  margin-right: 15px;
+
+  &.disabled {
+    color: #777;
+    cursor: default;
+    border-color: #ccc;
+
+    &:hover {
+      border-color: #ccc;
+    }
+  }
 }
 </style>

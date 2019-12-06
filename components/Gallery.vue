@@ -61,7 +61,7 @@
       infinite-scroll-distance="400"
       @mouseleave="hideActions"
     >
-      <div v-if="isGridView" @mouseover="showActions">
+      <div v-if="isGridView" @mouseover="debounceActions">
         <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
           <GridItem
             v-for="(item, index) in limited"
@@ -109,7 +109,7 @@ import ListItem from "~/components/ListItem.vue";
 import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
-// import { debounce } from "underscore";
+import { debounce } from "underscore";
 
 export default {
   components: {
@@ -130,7 +130,6 @@ export default {
       selected: null,
       size: "small",
       picked: null,
-      // debounceActions: () => {},
       list: {
         remain: 10,
         height: 0,
@@ -186,8 +185,8 @@ export default {
         : this.grid.compact[this.size].cols;
     }
   },
-  beforeMount() {
-    // this.debounceActions = debounce(this.showActions.bind(this), 10);
+  created() {
+    this.debounceActions = debounce(this.showActions, 90);
   },
   mounted() {
     if (this.isGridView) {
@@ -368,6 +367,12 @@ export default {
     cursor: pointer;
     position: relative;
 
+    &:hover {
+      span {
+        background-color: #999;
+      }
+    }
+
     &.active {
       cursor: default;
       background-color: #fff;
@@ -381,7 +386,8 @@ export default {
       position: absolute;
       width: 5px;
       height: 4px;
-      background-color: #dadada;
+      background-color: #b7b7b7;
+      transition: background-color ease .1s;
     }
   }
 }

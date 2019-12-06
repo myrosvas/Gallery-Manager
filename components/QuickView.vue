@@ -101,9 +101,11 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
+import { metadataMixin } from "~/mixins/metadataMixin";
 
 export default {
   props: ["selected", "isSavedDrive"],
+  mixins: [metadataMixin],
   methods: {
     ...mapActions(["removeFromSaved"]),
     ...mapMutations({
@@ -119,14 +121,6 @@ export default {
     remove() {
       this.removeFromSaved(this.selected);
       this.close();
-    }
-  },
-  filters: {
-    date(time) {
-      return new Date(time).toLocaleString();
-    },
-    kb(size) {
-      return Math.ceil(size / 1024);
     }
   }
 };
