@@ -186,7 +186,7 @@ export default {
     }
   },
   created() {
-    this.debounceActions = debounce(this.showActions, 100);
+    this.debounceActions = debounce(this.showActions, 90);
   },
   mounted() {
     if (this.isGridView) {
