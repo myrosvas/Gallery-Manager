@@ -9,41 +9,13 @@
         </div>
       </div>
       <div class="flex-center">
-        <div v-if="isLoading" class="loading flex-center">
-          <i class="loading"></i>
-          <span>Loading...</span>
-        </div>
-        <div v-if="count" class="view-controls flex-center">
-          <div
-            class="icon-grid"
-            @click="activateGridView"
-            :class="{active: isGridView}"
-            title="grid view"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div
-            class="icon-list"
-            @click="activateListView"
-            :class="{active: isListView}"
-            title="list view"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
+        <Loader v-bind:isLoading="isLoading" />
+        <ViewControls
+          v-bind:activateGridView="activateGridView"
+          v-bind:activateListView="activateListView"
+          v-bind:isGridView="isGridView"
+          v-bind:isListView="isListView"
+        />
       </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
@@ -108,6 +80,8 @@ import QuickView from "~/components/QuickView.vue";
 import ListItem from "~/components/ListItem.vue";
 import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
+import Loader from "~/components/Loader.vue";
+import ViewControls from "~/components/ViewControls.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
 import { grid, list, config } from "../config/gallery.config";
@@ -117,7 +91,9 @@ export default {
     QuickView,
     ListItem,
     GridItem,
-    HoverActions
+    HoverActions,
+    Loader,
+    ViewControls
   },
   data: () => {
     return {
