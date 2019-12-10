@@ -46,3 +46,7 @@ export const list = {
   bench: 20
 };
 
+export const viewType = {
+  list: 'list',
+  grid: 'grid'
+};

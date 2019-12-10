@@ -98,7 +98,7 @@ export default {
   data: () => {
     return {
       isOpen: false,
-      isGridView: false,
+      isGridView: true,
       isListView: false,
       isNativeLoading:
         typeof window !== "undefined"
@@ -123,10 +123,8 @@ export default {
   },
   created() {
     if (typeof window !== "undefined") {
-      this.isGridView = localStorage.getItem('isGridView') === null ? true : localStorage.getItem('isGridView');
-      this.isListView = localStorage.getItem('isListView') === null ? false : localStorage.getItem('isListView');
-      console.log(1, 'isGridView: ', this.isGridView);
-      console.log(2, 'isListView: ', this.isListView);
+      this.isGridView = localStorage.getItem('isGridView') === null ? true : JSON.parse(localStorage.getItem('isGridView'));
+      this.isListView = localStorage.getItem('isListView') === null ? false : JSON.parse(localStorage.getItem('isListView'));
     }
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
   },
@@ -135,8 +133,6 @@ export default {
       this.resetGridView();
     }
     if (this.isListView) {
-      console.log('mounted isGridView: ', this.isGridView);
-      console.log('mounted isListView: ', this.isListView);
       this.resetListView();
     }
   },
@@ -193,8 +189,6 @@ export default {
         ? grid.extend[this.size].step
         : grid.compact[this.size].step;
       this.changeInterval({ limit, step });
-      console.log('resetGridView isGridView: ', this.isGridView);
-      console.log('resetGridView isListView: ', this.isListView);
     },
     resetListView() {
       if (this.$refs.list) {
@@ -208,8 +202,6 @@ export default {
               this.list.remain
           );
       }
-      console.log('resetListView isGridView: ', this.isGridView);
-      console.log('resetListView isListView: ', this.isListView);
     },
     showActions(e) {
       const $target = e.target;
@@ -242,8 +234,6 @@ export default {
       setTimeout(() => (this.picked = null), config.hoverDebounce);
     },
     activateGridView() {
-      console.log(2, 'activateGridView()>> grid: ', this.isGridView);
-      console.log(2, 'activateGridView()>> list: ', this.isListView);
       if (this.isGridView) return;
 
       this.resetGridView();
@@ -253,8 +243,6 @@ export default {
       localStorage.setItem('isGridView', true);
     },
     activateListView() {
-      console.log(2, 'activateGridView()>> grid: ', this.isGridView);
-      console.log(2, 'activateGridView()>> list: ', this.isListView);
       if (this.isListView) return;
 
       this.isGridView = false;
