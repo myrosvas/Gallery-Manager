@@ -2,8 +2,8 @@
   <div class="view-controls flex-center">
     <div
       class="icon-grid"
-      @click="activateGridView"
-      :class="{active: isGridView}"
+      @click="changeView('grid')"
+      :class="{active: (viewType === 'grid')}"
       title="grid view"
     >
       <span></span>
@@ -18,8 +18,8 @@
     </div>
     <div
       class="icon-list"
-      @click="activateListView"
-      :class="{active: isListView}"
+      @click="changeView('list')"
+      :class="{active: (viewType === 'list')}"
       title="list view"
     >
       <span></span>
@@ -74,10 +74,8 @@
 <script>
   export default {
     props: [
-      "activateGridView",
-      "activateListView",
-      "isGridView",
-      "isListView"
+      "changeView",
+      "viewType"
     ]
   }
 </script>

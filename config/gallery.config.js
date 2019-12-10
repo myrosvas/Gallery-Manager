@@ -46,7 +46,7 @@ export const list = {
   bench: 20
 };
 
-export const viewType = {
+export const viewTypeEnum = {
   list: 'list',
   grid: 'grid'
 };
