@@ -24,14 +24,14 @@
 
     <div
       class="gallery-grid"
-      :class="{size, 'grid-disabled': (viewType === 'list')}"
+      :class="{size, 'grid-disabled': (viewType === viewTypeEnum.list)}"
       v-infinite-scroll="append"
       infinite-scroll-disabled="busy"
       infinite-scroll-immediate-check="true"
       infinite-scroll-distance="400"
       @mouseleave="hideActions"
     >
-      <div v-if="viewType === 'grid'" @mouseover="debounceActions">
+      <div v-if="viewType === viewTypeEnum.grid" @mouseover="debounceActions">
         <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
           <GridItem
             v-for="(item, index) in limited"
@@ -44,7 +44,7 @@
       </div>
 
       <HoverActions
-        v-if="viewType === 'grid'"
+        v-if="viewType === viewTypeEnum.grid"
         :isSavedDrive="isSavedDrive"
         :data="picked"
         @pick="pick()"
@@ -53,7 +53,7 @@
       />
     </div>
 
-    <div v-if="viewType === 'list'" class="gallery-list" ref="list">
+    <div v-if="viewType === viewTypeEnum.list" class="gallery-list" ref="list">
       <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
         <ListItem
           v-for="item in items"
@@ -104,7 +104,8 @@ export default {
       selected: null,
       size: "small",
       picked: null,
-      list
+      list,
+      viewTypeEnum
     };
   },
   props: ["items", "limited", "isSavedDrive", "isLoading"],
