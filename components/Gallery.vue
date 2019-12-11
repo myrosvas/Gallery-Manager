@@ -256,7 +256,7 @@ export default {
   flex-direction: column;
   padding: 0 0 7px 12px;
   border-radius: 5px;
-  box-shadow: 0 13px 20px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 13px 20px -6px $black-rgba-1;
 
   &-list {
     flex: 1;
@@ -301,7 +301,7 @@ export default {
   border-radius: 2px 0 0 2px;
 
   &.active + div {
-    border-left: 1px solid #fff;
+    border-left: 1px solid $white;
   }
   span:nth-child(1) {
     top: 2px;
@@ -353,7 +353,7 @@ export default {
   left: -1px;
 
   div + &.active {
-    border-left: 1px solid #fff;
+    border-left: 1px solid $white;
   }
   span:nth-child(1) {
     top: 2px;

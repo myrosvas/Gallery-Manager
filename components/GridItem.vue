@@ -6,13 +6,15 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .grid-item {
   margin-bottom: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background-color: #f1f1f1;
+  background-color: $medium-grey;
 
   img {
     display: block;
@@ -55,7 +57,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: $grey-rgba-5;
 }
 
 .see {

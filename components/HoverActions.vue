@@ -7,6 +7,8 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .hover-actions {
   display: flex;
   z-index: 3;
@@ -14,7 +16,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: $grey-rgba-5;
   opacity: 0;
   visibility: hidden;
 

@@ -42,6 +42,8 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .quick-view {
   position: fixed;
   z-index: 3;
@@ -52,7 +54,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: $black-rgba-5;
   text-align: center;
 
   .img-container {
@@ -74,7 +76,7 @@
 
 .box {
   margin: 2rem;
-  background-color: #fff;
+  background-color: $white;
   padding: 20px;
   max-width: 90%;
   max-height: 100%;

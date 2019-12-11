@@ -144,6 +144,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -165,7 +167,7 @@ section {
 }
 
 section > div {
-  background-color: #fff;
+  background-color: $white;
   height: calc(100vh - 80px);
 }
 
@@ -182,15 +184,15 @@ section > div {
   line-height: 30px;
   margin: 0;
   padding: 0 10px;
-  background-color: #fff;
+  background-color: $white;
   cursor: pointer;
   transition: 0.1s;
   outline: none;
-  border: 1px solid #d1d1d1;
-  border-bottom: 1px solid #bababa;
+  border: 1px solid $grey-border-btn;
+  border-bottom: 1px solid $dark-grey3;
 
   &:hover {
-    border-color: #a2a2a2;
+    border-color: $grey-border-dark;
   }
 }
 
@@ -205,12 +207,12 @@ section > div {
   margin-right: 15px;
 
   &.disabled {
-    color: #777;
+    color: $grey;
     cursor: default;
-    border-color: #ccc;
+    border-color: $grey-border-light;
 
     &:hover {
-      border-color: #ccc;
+      border-color: $grey-border-light;
     }
   }
 }
