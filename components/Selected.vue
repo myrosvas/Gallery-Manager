@@ -20,7 +20,7 @@
   flex: 0 0 290px;
   padding: 14px 0 9px 12px;
   border-radius: 5px;
-  box-shadow: 0 13px 20px -6px $black-rgba-1;
+  box-shadow: 0 13px 20px -6px $box-shadow-color;
 }
 
 .selected {

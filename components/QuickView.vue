@@ -43,8 +43,10 @@
 
 <style lang="scss">
 @import "~/assets/css/vars";
+@import "~/assets/css/mixins";
 
 .quick-view {
+  @include blackOpacity(background-color, 0.5);
   position: fixed;
   z-index: 3;
   left: 0;
@@ -54,7 +56,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $black-rgba-5;
   text-align: center;
 
   .img-container {

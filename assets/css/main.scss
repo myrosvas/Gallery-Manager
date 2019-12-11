@@ -1,6 +1,7 @@
 @import "vars";
 @import "normalize";
 @import "decorators";
+@import "mixins";
 
 select {
   font-weight: normal;
@@ -37,13 +38,13 @@ body .g-toast.top-center {
 }
 
 .icon {
+  @include blackOpacity(background-color, 0.9);
   display: block;
   width: 36px;
   height: 36px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 50%;
-  background-color: $black-rgba-9;
   margin: 5px;
   cursor: pointer;
 }

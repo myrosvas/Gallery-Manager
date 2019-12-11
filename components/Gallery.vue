@@ -249,6 +249,7 @@ export default {
 
 <style lang="scss">
 @import "~/assets/css/vars";
+@import "~/assets/css/mixins";
 
 .gallery {
   flex: 1;
@@ -256,7 +257,7 @@ export default {
   flex-direction: column;
   padding: 0 0 7px 12px;
   border-radius: 5px;
-  box-shadow: 0 13px 20px -6px $black-rgba-1;
+  box-shadow: 0 13px 20px -6px $box-shadow-color;
 
   &-list {
     flex: 1;

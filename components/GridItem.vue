@@ -7,6 +7,7 @@
 
 <style lang="scss">
 @import "~/assets/css/vars";
+@import "~/assets/css/mixins";
 
 .grid-item {
   margin-bottom: 5px;
@@ -44,6 +45,7 @@
 }
 
 .over {
+  @include whiteOpacity(background-color, 0.5);
   // display: none;
   display: flex;
   visibility: hidden;
@@ -57,7 +59,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: $grey-rgba-5;
 }
 
 .see {

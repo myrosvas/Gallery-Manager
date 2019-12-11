@@ -8,15 +8,16 @@
 
 <style lang="scss">
 @import "~/assets/css/vars";
+@import "~/assets/css/mixins";
 
 .hover-actions {
+  @include whiteOpacity(background-color, 0.5);
   display: flex;
   z-index: 3;
   position: absolute;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: $grey-rgba-5;
   opacity: 0;
   visibility: hidden;
 
