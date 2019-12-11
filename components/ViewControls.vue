@@ -72,10 +72,20 @@
 </style>
 
 <script>
+  import { mapMutations } from "vuex";
+
   export default {
-    props: [
-      "changeView",
-      "viewType"
-    ]
+    props: {
+      viewType: String
+    },
+    methods: {
+      ...mapMutations({
+        changeViewType: "changeViewType"
+      }),
+      changeView(type) {
+        if (this.viewType === type) return;
+        this.changeViewType(type);
+      }
+    }
   }
 </script>

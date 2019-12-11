@@ -10,10 +10,7 @@
       </div>
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
-        <ViewControls
-          :viewType="viewType"
-          :changeView="changeView"
-        />
+        <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
@@ -96,7 +93,6 @@ export default {
   data: () => {
     return {
       isOpen: false,
-      viewType: viewTypeEnum.grid,
       isNativeLoading:
         typeof window !== "undefined"
           ? "loading" in window.HTMLImageElement.prototype
@@ -111,7 +107,8 @@ export default {
   props: ["items", "limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
-      count: "count"
+      count: "count",
+      viewType: "viewType"
     }),
     columns() {
       return this.isSavedDrive
@@ -120,9 +117,6 @@ export default {
     }
   },
   created() {
-    if (typeof window !== "undefined") {
-      this.viewType = localStorage.getItem('viewType') === null ? viewTypeEnum.grid : localStorage.getItem('viewType');
-    }
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
   },
   mounted() {
@@ -141,6 +135,19 @@ export default {
     isSavedDrive: function() {
       if (this.viewType === viewTypeEnum.grid) {
         this.resetGridView();
+      }
+    },
+    viewType: function(type) {
+      switch(type) {
+        case viewTypeEnum.grid:
+          this.resetGridView();
+          break;
+        case viewTypeEnum.list:
+          type = viewTypeEnum.list;
+          this.$nextTick(() => this.resetListView());
+          break;
+        default:
+          console.error('viewType is incorrect');
       }
     }
   },
@@ -234,26 +241,9 @@ export default {
       // clean up debounce drawback
       setTimeout(() => (this.picked = null), config.hoverDebounce);
     },
-    changeView(chosenViewType) {
-      switch(chosenViewType) {
-        case viewTypeEnum.grid:
-          if (this.viewType === viewTypeEnum.grid) return;
-
-          this.resetGridView();
-          this.viewType = viewTypeEnum.grid;
-          localStorage.setItem('viewType', 'grid');
-          break;
-        case viewTypeEnum.list:
-          if (this.viewType === viewTypeEnum.list) return;
-
-          this.viewType = viewTypeEnum.list;
-          localStorage.setItem('viewType', 'list');
-          this.$nextTick(() => this.resetListView());
-          break;
-        default:
-          console.error('viewType is incorrect');
-      }
-    },
+    checkViewType(desiredViewType) {
+      return desiredViewType === viewTypeEnum[desiredViewType];
+    }
   }
 };
 </script>
