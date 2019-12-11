@@ -6,9 +6,7 @@ export const state = () => ({
   prevItems: [],
   limit: 0,
   step: 0,
-  viewType: typeof window !== "undefined" && localStorage.getItem('viewType') 
-    ? localStorage.getItem('viewType') 
-    : viewTypeEnum.grid
+  viewType: typeof window !== "undefined" && window.localStorage.getItem('viewType') || viewTypeEnum.grid,
 })
 
 export const actions = {
@@ -48,11 +46,7 @@ export const actions = {
     commit('remove', url);
     commit('selected/remove', name);
     this.$toast.success("Removed from the list");
-  },
-  saveView(chosenViewType) {
-    localStorage.setItem('viewType', chosenViewType);
-    commit('changeViewType', chosenViewType);
-  },
+  }
 }
 
 export const mutations = {
@@ -76,7 +70,7 @@ export const mutations = {
   changeInterval(state, payload) {
     if (payload) {
       const { limit, step } = payload;
-      
+
       state.step = step;
       state.limit = limit;
     } else {
@@ -87,9 +81,6 @@ export const mutations = {
     if (payload) {
       state.viewType = payload;
     }
-  },
-  getDefaultViewType(state) {
-    state.viewType = localStorage.getItem('viewType') === null ? viewTypeEnum.grid : localStorage.getItem('viewType');
   }
 }
 

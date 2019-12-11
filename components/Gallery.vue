@@ -51,14 +51,14 @@
     </div>
 
     <div v-if="viewType === viewTypeEnum.list" class="gallery-list" ref="list">
-      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
+      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench" :variable="true">
         <ListItem
           v-for="item in items"
           :key="item.thumbUrl"
           :item="item"
           :isNativeLoading="isNativeLoading"
           :isSavedDrive="isSavedDrive"
-          :minHeight="list.height"
+          :style="{ height: Math.max(list.height, Math.ceil(110 * item.height / item.width) + 6) + 'px'}"
           @pick="pick"
           @select="selectItem"
           @remove="removeFromSaved"
@@ -108,7 +108,7 @@ export default {
   computed: {
     ...mapGetters({
       count: "count",
-      viewType: "viewType"
+      viewType: "type"
     }),
     columns() {
       return this.isSavedDrive
@@ -120,15 +120,15 @@ export default {
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
   },
   mounted() {
-    switch(this.viewType) {
-      case(viewTypeEnum.grid):
+    switch (this.viewType) {
+      case viewTypeEnum.grid:
         this.resetGridView();
-      break;
-      case(viewTypeEnum.list):
+        break;
+      case viewTypeEnum.list:
         this.resetListView();
-      break;
-      default: 
-        console.error('viewType is incorrect');
+        break;
+      default:
+        console.error("viewType is incorrect");
     }
   },
   watch: {
@@ -138,7 +138,7 @@ export default {
       }
     },
     viewType: function(type) {
-      switch(type) {
+      switch (type) {
         case viewTypeEnum.grid:
           this.resetGridView();
           break;
@@ -147,7 +147,7 @@ export default {
           this.$nextTick(() => this.resetListView());
           break;
         default:
-          console.error('viewType is incorrect');
+          console.error("viewType is incorrect");
       }
     }
   },
@@ -240,9 +240,6 @@ export default {
       this.picked = null;
       // clean up debounce drawback
       setTimeout(() => (this.picked = null), config.hoverDebounce);
-    },
-    checkViewType(desiredViewType) {
-      return desiredViewType === viewTypeEnum[desiredViewType];
     }
   }
 };
