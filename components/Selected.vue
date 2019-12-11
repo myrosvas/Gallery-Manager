@@ -13,12 +13,14 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .list {
   margin-left: 20px;
   flex: 0 0 290px;
   padding: 14px 0 9px 12px;
   border-radius: 5px;
-  box-shadow: 0 13px 20px -6px rgba(0,0,0,0.1);
+  box-shadow: 0 13px 20px -6px $box-shadow-color;
 }
 
 .selected {
@@ -46,8 +48,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #fff;
-  background-color: #000;
+  color: $white;
+  background-color: $black;
   cursor: pointer;
   font-size: 20px;
 }

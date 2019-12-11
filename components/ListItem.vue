@@ -28,6 +28,8 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .l-item {
   box-sizing: border-box;
   display: flex;
@@ -64,7 +66,7 @@
 }
 
 .l-item + .l-item {
-  border-top: 1px dashed #f0f0f0;
+  border-top: 1px dashed $light-grey;
 }
 </style>
 

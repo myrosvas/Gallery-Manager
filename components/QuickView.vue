@@ -42,7 +42,11 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+@import "~/assets/css/mixins";
+
 .quick-view {
+  @include blackOpacity(background-color, 0.5);
   position: fixed;
   z-index: 3;
   left: 0;
@@ -52,7 +56,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
   text-align: center;
 
   .img-container {
@@ -74,7 +77,7 @@
 
 .box {
   margin: 2rem;
-  background-color: #fff;
+  background-color: $white;
   padding: 20px;
   max-width: 90%;
   max-height: 100%;

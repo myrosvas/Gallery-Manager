@@ -40,22 +40,22 @@
 
     div {
       height: 24px;
-      border: 1px solid #dadada;
-      background-color: #fff;
+      border: 1px solid $grey-border-medium;
+      background-color: $white;
       cursor: pointer;
       position: relative;
 
       &:hover {
         span {
-          background-color: #999;
+          background-color: $dark-grey;
         }
       }
 
       &.active {
         cursor: default;
-        background-color: #fff;
+        background-color: $white;
         span {
-          background-color: #000;
+          background-color: $black;
         }
       }
 
@@ -64,7 +64,7 @@
         position: absolute;
         width: 5px;
         height: 4px;
-        background-color: #b7b7b7;
+        background-color: $dark-grey2;
         transition: background-color ease 0.1s;
       }
     }
