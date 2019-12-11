@@ -10,12 +10,7 @@
       </div>
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
-        <ViewControls
-          :activateGridView="activateGridView"
-          :activateListView="activateListView"
-          :isGridView="isGridView"
-          :isListView="isListView"
-        />
+        <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
@@ -26,14 +21,14 @@
 
     <div
       class="gallery-grid"
-      :class="{size, 'grid-disabled': !isGridView}"
+      :class="{size, 'grid-disabled': (viewType === viewTypeEnum.list)}"
       v-infinite-scroll="append"
       infinite-scroll-disabled="busy"
       infinite-scroll-immediate-check="true"
       infinite-scroll-distance="400"
       @mouseleave="hideActions"
     >
-      <div v-if="isGridView" @mouseover="debounceActions">
+      <div v-if="viewType === viewTypeEnum.grid" @mouseover="debounceActions">
         <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
           <GridItem
             v-for="(item, index) in limited"
@@ -46,7 +41,7 @@
       </div>
 
       <HoverActions
-        v-if="isGridView"
+        v-if="viewType === viewTypeEnum.grid"
         :isSavedDrive="isSavedDrive"
         :data="picked"
         @pick="pick()"
@@ -55,7 +50,7 @@
       />
     </div>
 
-    <div v-if="isListView" class="gallery-list" ref="list">
+    <div v-if="viewType === viewTypeEnum.list" class="gallery-list" ref="list">
       <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
         <ListItem
           v-for="item in items"
@@ -84,7 +79,7 @@ import Loader from "~/components/Loader.vue";
 import ViewControls from "~/components/ViewControls.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
-import { grid, list, config } from "../config/gallery.config";
+import { grid, list, config, viewTypeEnum } from "../config/gallery.config";
 
 export default {
   components: {
@@ -98,8 +93,6 @@ export default {
   data: () => {
     return {
       isOpen: false,
-      isGridView: true,
-      isListView: false,
       isNativeLoading:
         typeof window !== "undefined"
           ? "loading" in window.HTMLImageElement.prototype
@@ -107,13 +100,15 @@ export default {
       selected: null,
       size: "small",
       picked: null,
-      list
+      list,
+      viewTypeEnum
     };
   },
   props: ["items", "limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
-      count: "count"
+      count: "count",
+      viewType: "viewType"
     }),
     columns() {
       return this.isSavedDrive
@@ -125,17 +120,34 @@ export default {
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
   },
   mounted() {
-    if (this.isGridView) {
-      this.resetGridView();
-    }
-    if (this.isListView) {
-      this.resetListView();
+    switch(this.viewType) {
+      case(viewTypeEnum.grid):
+        this.resetGridView();
+      break;
+      case(viewTypeEnum.list):
+        this.resetListView();
+      break;
+      default: 
+        console.error('viewType is incorrect');
     }
   },
   watch: {
     isSavedDrive: function() {
-      if (this.isGridView) {
+      if (this.viewType === viewTypeEnum.grid) {
         this.resetGridView();
+      }
+    },
+    viewType: function(type) {
+      switch(type) {
+        case viewTypeEnum.grid:
+          this.resetGridView();
+          break;
+        case viewTypeEnum.list:
+          type = viewTypeEnum.list;
+          this.$nextTick(() => this.resetListView());
+          break;
+        default:
+          console.error('viewType is incorrect');
       }
     }
   },
@@ -229,19 +241,8 @@ export default {
       // clean up debounce drawback
       setTimeout(() => (this.picked = null), config.hoverDebounce);
     },
-    activateGridView() {
-      if (this.isGridView) return;
-
-      this.resetGridView();
-      this.isListView = false;
-      this.isGridView = true;
-    },
-    activateListView() {
-      if (this.isListView) return;
-
-      this.isGridView = false;
-      this.isListView = true;
-      this.$nextTick(() => this.resetListView());
+    checkViewType(desiredViewType) {
+      return desiredViewType === viewTypeEnum[desiredViewType];
     }
   }
 };

@@ -1,10 +1,14 @@
 import { uniq } from "underscore";
+import { viewTypeEnum } from "../config/gallery.config";
 
 export const state = () => ({
   items: [],
   prevItems: [],
   limit: 0,
   step: 0,
+  viewType: typeof window !== "undefined" && localStorage.getItem('viewType') 
+    ? localStorage.getItem('viewType') 
+    : viewTypeEnum.grid
 })
 
 export const actions = {
@@ -44,7 +48,11 @@ export const actions = {
     commit('remove', url);
     commit('selected/remove', name);
     this.$toast.success("Removed from the list");
-  }
+  },
+  saveView(chosenViewType) {
+    localStorage.setItem('viewType', chosenViewType);
+    commit('changeViewType', chosenViewType);
+  },
 }
 
 export const mutations = {
@@ -68,12 +76,20 @@ export const mutations = {
   changeInterval(state, payload) {
     if (payload) {
       const { limit, step } = payload;
-
-      state.limit = limit;
+      
       state.step = step;
+      state.limit = limit;
     } else {
       state.limit = state.limit + state.step;
     }
+  },
+  changeViewType(state, payload) {
+    if (payload) {
+      state.viewType = payload;
+    }
+  },
+  getDefaultViewType(state) {
+    state.viewType = localStorage.getItem('viewType') === null ? viewTypeEnum.grid : localStorage.getItem('viewType');
   }
 }
 
@@ -84,6 +100,7 @@ export const getters = {
   count: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
-  }
+  },
+  viewType: (state) => state.viewType
   // limited: (state, getters) => getters.filteredItems,
 }
