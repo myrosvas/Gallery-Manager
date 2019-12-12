@@ -6,7 +6,7 @@ export const state = () => ({
   prevItems: [],
   limit: 0,
   step: 0,
-  viewType: typeof window !== "undefined" && window.localStorage.getItem('viewType') || viewTypeEnum.grid,
+  viewType: viewTypeEnum.grid,
 })
 
 export const actions = {

@@ -84,7 +84,7 @@ export default {
     }),
     changeView(type) {
       if (this.viewType === type) return;
-      localStorage.setItem("viewType", type);
+      this.$cookies.set("viewType", type);
       this.changeViewType(type);
     }
   }

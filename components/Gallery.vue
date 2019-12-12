@@ -108,7 +108,7 @@ export default {
   computed: {
     ...mapGetters({
       count: "count",
-      viewType: "type"
+      viewType: "viewType"
     }),
     columns() {
       return this.isSavedDrive
@@ -118,6 +118,7 @@ export default {
   },
   created() {
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
+    this.changeViewType(this.$cookies.get("viewType"));
   },
   mounted() {
     switch (this.viewType) {
@@ -155,7 +156,8 @@ export default {
     ...mapActions(["removeFromSaved"]),
     ...mapMutations({
       selectItem: "selected/select",
-      changeInterval: "changeInterval"
+      changeInterval: "changeInterval",
+      changeViewType: "changeViewType"
     }),
     pick(item) {
       if (item) {

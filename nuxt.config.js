@@ -48,6 +48,7 @@ module.exports = {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/toast',
+    'cookie-universal-nuxt',
   ],
   toast: {
     duration: 2000,
