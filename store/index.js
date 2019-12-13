@@ -52,7 +52,7 @@ export const actions = {
 export const mutations = {
   add(state, items) {
     state.items = state.items.concat(items);
-    setTimeout(() => this.$toast.success('Added to the gallery'), 400);
+    setTimeout(() => this.$toast.success('Added to the gallery'), 200);
   },
   save(state) {
     state.prevItems = state.items;
