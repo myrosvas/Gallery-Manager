@@ -144,7 +144,6 @@ export default {
           this.resetGridView();
           break;
         case viewTypeEnum.list:
-          type = viewTypeEnum.list;
           this.$nextTick(() => this.resetListView());
           break;
         default:
