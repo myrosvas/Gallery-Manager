@@ -60,6 +60,9 @@
 
   .img-container {
     min-height: 100px;
+    background-image: url("~assets/icons/preloader.gif");
+    background-repeat: no-repeat;
+    background-position: center;
     text-align: center;
   }
 
@@ -70,7 +73,15 @@
     transition: opacity 0.15s;
   }
 
+  .v-lazy-image {
+    max-height: 0;
+    transition: max-height 0.15s ease-out;
+    transition: filter 0.7s;
+  }
+  
   .v-lazy-image-loaded {
+    max-height: 500px;
+    transition: max-height 0.25s ease-in;
     opacity: 1;
   }
 }
