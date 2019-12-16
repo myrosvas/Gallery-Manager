@@ -10,6 +10,7 @@
       </div>
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
+        <Filters />
         <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
@@ -77,6 +78,7 @@ import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
 import Loader from "~/components/Loader.vue";
 import ViewControls from "~/components/ViewControls.vue";
+import Filters from "~/components/Filters.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
 import { grid, list, config, viewTypeEnum } from "../config/gallery.config";
@@ -88,6 +90,7 @@ export default {
     GridItem,
     HoverActions,
     Loader,
+    Filters,
     ViewControls
   },
   data: () => {

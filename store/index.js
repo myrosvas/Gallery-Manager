@@ -1,5 +1,5 @@
 import { uniq } from "underscore";
-import { viewTypeEnum } from "../config/gallery.config";
+import { viewTypeEnum, filtersEnum } from "../config/gallery.config";
 
 export const state = () => ({
   items: [],
@@ -7,6 +7,7 @@ export const state = () => ({
   limit: 0,
   step: 0,
   viewType: viewTypeEnum.grid,
+  filterType: ''
 })
 
 export const actions = {
@@ -81,12 +82,41 @@ export const mutations = {
     if (payload) {
       state.viewType = payload;
     }
+  },
+  changeFilterType(state, payload) {
+    if (payload) {
+      state.filterType = payload;
+    }
   }
 }
 
 export const getters = {
-  filteredItems(state) {
+  uniqueItems(state) {
     return uniq(state.items, item => item.url);
+  },
+  filteredItems(state, getters) {
+    const { uniqueItems } = getters;
+
+    switch (state.filterType) {
+      case filtersEnum.size:
+        return uniqueItems.sort((prevEl, nextEl) => {
+          return prevEl.size - nextEl.size;
+        });
+      case filtersEnum.name:
+        return uniqueItems.sort((prevEl, nextEl) => {
+          const prevName = prevEl.name.toUpperCase();
+          const nextName = nextEl.name.toUpperCase();
+          const isPrevLetterBigger = (prevName > nextName) ? 1 : 0;
+      
+          return (prevName < nextName) ? -1 : isPrevLetterBigger;
+        });
+      case filtersEnum.date:
+        return uniqueItems.sort((prevEl, nextEl) => {
+          return new Date(prevEl.mtime) - new Date(nextEl.mtime);
+        })
+      default:
+        return uniqueItems;
+    }
   },
   count: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
