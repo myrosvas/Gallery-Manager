@@ -67,7 +67,12 @@
       </virtual-list>
     </div>
 
-    <QuickView v-if="isOpen" :selected="selected" :isSavedDrive="isSavedDrive" @close="close" />
+    <QuickView
+      v-if="isOpen"
+      :selected="selected"
+      :isSavedDrive="isSavedDrive"
+      @close="close"
+    />
   </div>
 </template>
 
