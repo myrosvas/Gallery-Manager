@@ -60,17 +60,26 @@
 
   .img-container {
     min-height: 100px;
+    background-image: url("~assets/icons/preloader.gif");
+    background-repeat: no-repeat;
+    background-position: center;
     text-align: center;
   }
 
   img {
     margin-bottom: 10px;
-    max-height: calc(100vh - 180px);
     opacity: 0;
     transition: opacity 0.15s;
   }
 
+  .v-lazy-image {
+    max-height: 0;
+    transition: max-height 0.15s ease-out;
+  }
+  
   .v-lazy-image-loaded {
+    max-height: calc(100vh - 180px);
+    transition: max-height 0.25s ease-in;
     opacity: 1;
   }
 }
