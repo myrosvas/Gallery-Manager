@@ -36,7 +36,7 @@
 @import "~/assets/css/vars";
 
 .view-controls {
-  margin-left: 20px;
+  margin-left: 10px;
 
   div {
     height: 24px;

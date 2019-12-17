@@ -50,3 +50,9 @@ export const viewTypeEnum = {
   list: 'list',
   grid: 'grid'
 };
+
+export const filtersEnum = {
+  date: 'date',
+  name: 'name',
+  size: 'size'
+};

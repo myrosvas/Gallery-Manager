@@ -2,13 +2,15 @@
   <div class="gallery">
     <div class="gallery-nav">
       <div class="flex-center">
-        <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
+        <div class="hint" v-if="!count && !isLoading && !foundItems.length && !searchInput">Gallery is empty</div>
         <div class="hint" v-if="foundItems.length">
-          <button @click="nullifySearchResults()">Go back</button>
           Found images:
           <b>{{foundItems.length}}</b>
         </div>
-        <div class="hint" v-if="count && !isLoading && !foundItems.length">
+        <div class="hint" v-if="!foundItems.length && searchInput">
+          <span>No images found</span>
+        </div>
+        <div class="hint" v-if="count && !isLoading && !foundItems.length && !searchInput">
           Count:
           <b>{{count}}</b>
         </div>
@@ -16,6 +18,7 @@
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
         <Search />
+        <Filters :resetGridView="resetGridView" />
         <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
@@ -89,6 +92,7 @@ import HoverActions from "~/components/HoverActions.vue";
 import Loader from "~/components/Loader.vue";
 import ViewControls from "~/components/ViewControls.vue";
 import Search from "~/components/Search.vue";
+import Filters from "~/components/Filters.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
 import { grid, list, config, viewTypeEnum } from "../config/gallery.config";
@@ -101,6 +105,7 @@ export default {
     HoverActions,
     Loader,
     ViewControls,
+    Filters,
     Search
   },
   data: () => {
@@ -117,12 +122,14 @@ export default {
       viewTypeEnum
     };
   },
-  props: ["items", "limited", "isSavedDrive", "isLoading"],
+  props: ["limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
       count: "count",
       viewType: "viewType",
-      foundItems: "foundItems"
+      foundItems: "foundItems",
+      searchInput: "searchInput",
+      items: "items"
     }),
     columns() {
       return this.isSavedDrive
@@ -170,8 +177,7 @@ export default {
     ...mapMutations({
       selectItem: "selected/select",
       changeInterval: "changeInterval",
-      changeViewType: "changeViewType",
-      nullifySearchResults: "nullifySearchResults"
+      changeViewType: "changeViewType"
     }),
     pick(item) {
       if (item) {

@@ -1,5 +1,5 @@
 import { uniq } from "underscore";
-import { viewTypeEnum } from "../config/gallery.config";
+import { viewTypeEnum, filtersEnum } from "../config/gallery.config";
 
 export const state = () => ({
   items: [],
@@ -7,7 +7,8 @@ export const state = () => ({
   limit: 0,
   step: 0,
   viewType: viewTypeEnum.grid,
-  foundItems: []
+  filterType: 'date',
+  searchInput: ''
 })
 
 export const actions = {
@@ -83,35 +84,58 @@ export const mutations = {
       state.viewType = payload;
     }
   },
-  findItems(state, payload) {
-    const { filteredItems } = getters;
-
+  changeFilterType(state, payload) {
     if (payload) {
-      let searchResult = filteredItems(state).filter(item => item.name.includes(payload));
-      
-      if (searchResult.length !== 0) {
-        console.log('Found: ', searchResult);
-        state.foundItems = searchResult;
-      } else {
-        console.log(state.foundItems, ' No images found!');
-        state.foundItems = [];
-      }
-    } 
+      state.filterType = payload;
+    }
+  },
+  saveSearchInput(state, payload) {
+    state.searchInput = payload;
   },
   nullifySearchResults(state) {
-    state.foundItems = [];
+    state.searchInput = '';
+    console.log('nullified!');
   }
 }
 
 export const getters = {
-  filteredItems(state) {
+  uniqueItems(state) {
     return uniq(state.items, item => item.url);
+  },
+  foundItems(state, getters) {
+    return state.searchInput.length 
+    ? getters.uniqueItems.filter(({name}) => name.includes(state.searchInput)) 
+    : getters.uniqueItems
+  },
+  filteredItems(state, getters) {
+    const { foundItems } = getters;
+
+    switch (state.filterType) {
+      case filtersEnum.size:
+        return foundItems.sort((prevEl, nextEl) => {
+          return prevEl.size - nextEl.size;
+        });
+      case filtersEnum.name:
+        return foundItems.sort((prevEl, nextEl) => {
+          const prevName = prevEl.name.toUpperCase();
+          const nextName = nextEl.name.toUpperCase();
+          const isPrevLetterBigger = (prevName > nextName) ? 1 : 0;
+      
+          return (prevName < nextName) ? -1 : isPrevLetterBigger;
+        });
+      case filtersEnum.date:
+        return foundItems.sort((prevEl, nextEl) => {
+          return new Date(prevEl.mtime) - new Date(nextEl.mtime);
+        })
+      default:
+        return foundItems;
+    }
   },
   count: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
   },
   viewType: (state) => state.viewType,
-  foundItems: (state) => state.foundItems
-  // limited: (state, getters) => getters.filteredItems,
+  filterType: (state) => state.filterType,
+  searchInput: (state) => state.searchInput
 }
