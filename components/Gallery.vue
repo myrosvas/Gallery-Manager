@@ -199,7 +199,6 @@ export default {
       }, 150);
     },
     resetGridView() {
-      console.log('resetGridView');
       const limit = this.isSavedDrive
         ? grid.extend[this.size].limit
         : grid.compact[this.size].limit;

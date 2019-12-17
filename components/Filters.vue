@@ -2,9 +2,7 @@
   <div class="filter-wrapper">
     <span>Filter by:</span>
     <select v-model="selectedFilter" :change="onFilterChange()">
-      <option value="date">{{filtersEnum.date}}</option>
-      <option value="name">{{filtersEnum.name}}</option>
-      <option value="size">{{filtersEnum.size}}</option>
+      <option v-for="value in filtersEnum" :key="value">{{ value }}</option>
     </select>
   </div>
 </template>
