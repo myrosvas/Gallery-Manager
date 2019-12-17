@@ -7,6 +7,7 @@ export const state = () => ({
   limit: 0,
   step: 0,
   viewType: viewTypeEnum.grid,
+  foundItems: []
 })
 
 export const actions = {
@@ -81,6 +82,24 @@ export const mutations = {
     if (payload) {
       state.viewType = payload;
     }
+  },
+  findItems(state, payload) {
+    const { filteredItems } = getters;
+
+    if (payload) {
+      let searchResult = filteredItems(state).filter(item => item.name.includes(payload));
+      
+      if (searchResult.length !== 0) {
+        console.log('Found: ', searchResult);
+        state.foundItems = searchResult;
+      } else {
+        console.log(state.foundItems, ' No images found!');
+        state.foundItems = [];
+      }
+    } 
+  },
+  nullifySearchResults(state) {
+    state.foundItems = [];
   }
 }
 
@@ -92,6 +111,7 @@ export const getters = {
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
   },
-  viewType: (state) => state.viewType
+  viewType: (state) => state.viewType,
+  foundItems: (state) => state.foundItems
   // limited: (state, getters) => getters.filteredItems,
 }

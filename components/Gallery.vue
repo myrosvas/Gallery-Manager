@@ -3,13 +3,19 @@
     <div class="gallery-nav">
       <div class="flex-center">
         <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
-        <div class="hint" v-if="count && !isLoading">
+        <div class="hint" v-if="foundItems.length">
+          <button @click="nullifySearchResults()">Go back</button>
+          Found images:
+          <b>{{foundItems.length}}</b>
+        </div>
+        <div class="hint" v-if="count && !isLoading && !foundItems.length">
           Count:
           <b>{{count}}</b>
         </div>
       </div>
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
+        <Search />
         <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
@@ -82,6 +88,7 @@ import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
 import Loader from "~/components/Loader.vue";
 import ViewControls from "~/components/ViewControls.vue";
+import Search from "~/components/Search.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
 import { grid, list, config, viewTypeEnum } from "../config/gallery.config";
@@ -93,7 +100,8 @@ export default {
     GridItem,
     HoverActions,
     Loader,
-    ViewControls
+    ViewControls,
+    Search
   },
   data: () => {
     return {
@@ -113,7 +121,8 @@ export default {
   computed: {
     ...mapGetters({
       count: "count",
-      viewType: "viewType"
+      viewType: "viewType",
+      foundItems: "foundItems"
     }),
     columns() {
       return this.isSavedDrive
@@ -161,7 +170,8 @@ export default {
     ...mapMutations({
       selectItem: "selected/select",
       changeInterval: "changeInterval",
-      changeViewType: "changeViewType"
+      changeViewType: "changeViewType",
+      nullifySearchResults: "nullifySearchResults"
     }),
     pick(item) {
       if (item) {
