@@ -7,7 +7,7 @@ export const state = () => ({
   limit: 0,
   step: 0,
   viewType: viewTypeEnum.grid,
-  filterType: ''
+  filterType: 'date'
 })
 
 export const actions = {
@@ -122,6 +122,7 @@ export const getters = {
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
   },
-  viewType: (state) => state.viewType
+  viewType: (state) => state.viewType,
+  filterType: (state) => state.filterType
   // limited: (state, getters) => getters.filteredItems,
 }

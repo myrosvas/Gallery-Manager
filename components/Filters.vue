@@ -1,27 +1,34 @@
 <template>
   <div class="filter-wrapper">
     <span>Filter by:</span>
-    <select v-model="selectedFilter" :change="changeFilterType(selectedFilter)">
-      <option value="date">date</option>
-      <option value="name">name</option>
-      <option value="size">size</option>
+    <select v-model="selectedFilter" :change="onFilterChange()">
+      <option value="date">{{filtersEnum.date}}</option>
+      <option value="name">{{filtersEnum.name}}</option>
+      <option value="size">{{filtersEnum.size}}</option>
     </select>
   </div>
 </template>
 
 <script>
   import { mapMutations } from "vuex";
+  import { filtersEnum } from '../config/gallery.config';
 
   export default {
     data: () => {
       return {
-        selectedFilter: 'date'
+        selectedFilter: 'date',
+        filtersEnum
       }
     },
+    props: ["resetGridView"],
     methods: {
       ...mapMutations({
         changeFilterType: "changeFilterType"
-      })
+      }),
+      onFilterChange() {
+        this.resetGridView();
+        this.changeFilterType(this.selectedFilter);
+      }
     }
   }
 </script>
