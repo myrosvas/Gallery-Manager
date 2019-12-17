@@ -1,7 +1,7 @@
 <template>
   <div class="filter-wrapper">
     <span>Filter by:</span>
-    <select v-model="filterType" :change="onFilterChange()">
+    <select v-model="filterType">
       <option v-for="value in filtersEnum" :key="value">{{ value }}</option>
     </select>
   </div>
@@ -23,6 +23,7 @@
           return this.$store.state.filterType
         },
         set (value) {
+          this.resetGridView();
           this.changeFilterType(value);
         }
       }
@@ -31,11 +32,7 @@
     methods: {
       ...mapMutations({
         changeFilterType: "changeFilterType"
-      }),
-      onFilterChange() {
-        this.resetGridView();
-        this.changeFilterType(this.filterType);
-      }
+      })
     }
   }
 </script>
