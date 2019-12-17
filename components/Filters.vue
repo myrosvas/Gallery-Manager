@@ -23,7 +23,7 @@
           return this.$store.state.filterType
         },
         set (value) {
-          this.$store.commit('changeFilterType', value)
+          this.changeFilterType(value);
         }
       }
     },
