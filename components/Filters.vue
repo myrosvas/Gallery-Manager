@@ -1,7 +1,7 @@
 <template>
   <div class="filter-wrapper">
     <span>Filter by:</span>
-    <select v-model="selectedFilter" :change="onFilterChange()">
+    <select v-model="filterType" :change="onFilterChange()">
       <option v-for="value in filtersEnum" :key="value">{{ value }}</option>
     </select>
   </div>
@@ -14,8 +14,17 @@
   export default {
     data: () => {
       return {
-        selectedFilter: 'date',
         filtersEnum
+      }
+    },
+    computed: {
+      filterType: {
+        get () {
+          return this.$store.state.filterType
+        },
+        set (value) {
+          this.$store.commit('changeFilterType', value)
+        }
       }
     },
     props: ["resetGridView"],
@@ -25,7 +34,7 @@
       }),
       onFilterChange() {
         this.resetGridView();
-        this.changeFilterType(this.selectedFilter);
+        this.changeFilterType(this.filterType);
       }
     }
   }
