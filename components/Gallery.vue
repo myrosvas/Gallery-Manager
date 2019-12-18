@@ -3,12 +3,9 @@
     <div class="gallery-nav">
       <div class="flex-center">
         <div class="hint" v-if="!count && !isLoading && !foundItems.length && !searchInput">Gallery is empty</div>
-        <div class="hint" v-if="foundItems.length">
+        <div class="hint" v-if="searchInput">
           Found images:
           <b>{{foundItems.length}}</b>
-        </div>
-        <div class="hint" v-if="!foundItems.length && searchInput">
-          <span>No images found</span>
         </div>
         <div class="hint" v-if="count && !isLoading && !foundItems.length && !searchInput">
           Count:
