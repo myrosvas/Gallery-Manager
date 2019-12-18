@@ -38,15 +38,22 @@
 </script>
 
 <style lang="scss" scoped>
+@import "~/assets/css/vars";
+
   .filter-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 30px;
     width: 130px;
+    margin-left: 10px;
 
     select {
       height: 25px;
+    }
+
+    span {
+      color: $grey;
     }
   }
 </style>

@@ -7,7 +7,8 @@ export const state = () => ({
   limit: 0,
   step: 0,
   viewType: viewTypeEnum.grid,
-  filterType: 'date'
+  filterType: 'date',
+  search: ''
 })
 
 export const actions = {
@@ -87,6 +88,12 @@ export const mutations = {
     if (payload) {
       state.filterType = payload;
     }
+  },
+  updateSearch(state, payload) {
+    state.search = payload;
+  },
+  clearSearch(state) {
+    state.search = '';
   }
 }
 
@@ -94,16 +101,21 @@ export const getters = {
   uniqueItems(state) {
     return uniq(state.items, item => item.url);
   },
+  foundItems(state, getters) {
+    return state.search.length 
+    ? getters.uniqueItems.filter(({name}) => name.includes(state.search)) 
+    : getters.uniqueItems
+  },
   filteredItems(state, getters) {
-    const { uniqueItems } = getters;
+    const { foundItems } = getters;
 
     switch (state.filterType) {
       case filtersEnum.size:
-        return uniqueItems.sort((prevEl, nextEl) => {
+        return foundItems.sort((prevEl, nextEl) => {
           return prevEl.size - nextEl.size;
         });
       case filtersEnum.name:
-        return uniqueItems.sort((prevEl, nextEl) => {
+        return foundItems.sort((prevEl, nextEl) => {
           const prevName = prevEl.name.toUpperCase();
           const nextName = nextEl.name.toUpperCase();
           const isPrevLetterBigger = (prevName > nextName) ? 1 : 0;
@@ -111,11 +123,11 @@ export const getters = {
           return (prevName < nextName) ? -1 : isPrevLetterBigger;
         });
       case filtersEnum.date:
-        return uniqueItems.sort((prevEl, nextEl) => {
+        return foundItems.sort((prevEl, nextEl) => {
           return new Date(prevEl.mtime) - new Date(nextEl.mtime);
         })
       default:
-        return uniqueItems;
+        return foundItems;
     }
   },
   count: (state, getters) => getters.filteredItems.length,
@@ -123,6 +135,6 @@ export const getters = {
     return getters.filteredItems.slice(0, state.limit);
   },
   viewType: (state) => state.viewType,
-  filterType: (state) => state.filterType
-  // limited: (state, getters) => getters.filteredItems,
+  filterType: (state) => state.filterType,
+  search: (state) => state.search
 }

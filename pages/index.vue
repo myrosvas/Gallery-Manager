@@ -32,7 +32,6 @@
 
     <section>
       <Gallery
-        :items="items"
         :limited="limited"
         :isSavedDrive="isSavedDrive"
         :isLoading="isLoading"

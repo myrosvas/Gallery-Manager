@@ -2,14 +2,15 @@
   <div class="gallery">
     <div class="gallery-nav">
       <div class="flex-center">
-        <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
-        <div class="hint" v-if="count && !isLoading">
+        <div class="hint" v-if="!count && !isLoading && !search">Gallery is empty</div>
+        <div class="hint" v-else>
           Count:
           <b>{{count}}</b>
         </div>
       </div>
       <div class="flex-center">
         <Loader :isLoading="isLoading" />
+        <Search />
         <Filters :resetGridView="resetGridView" />
         <ViewControls :viewType="viewType" />
       </div>
@@ -83,6 +84,7 @@ import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
 import Loader from "~/components/Loader.vue";
 import ViewControls from "~/components/ViewControls.vue";
+import Search from "~/components/Search.vue";
 import Filters from "~/components/Filters.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
@@ -95,8 +97,9 @@ export default {
     GridItem,
     HoverActions,
     Loader,
+    ViewControls,
     Filters,
-    ViewControls
+    Search
   },
   data: () => {
     return {
@@ -112,11 +115,13 @@ export default {
       viewTypeEnum
     };
   },
-  props: ["items", "limited", "isSavedDrive", "isLoading"],
+  props: ["limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
       count: "count",
-      viewType: "viewType"
+      viewType: "viewType",
+      search: "search",
+      items: "filteredItems"
     }),
     columns() {
       return this.isSavedDrive
