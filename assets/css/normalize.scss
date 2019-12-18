@@ -88,7 +88,7 @@ select {
   background-color: $white;
   transition: 0.1s;
 
-  &:hover {
+  &:hover, &:focus {
     border-color: $grey-border-dark;
   }
 }

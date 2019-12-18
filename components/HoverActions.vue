@@ -1,5 +1,5 @@
 <template>
-  <div class="hover-actions" :style="style" :class="{ active: isVisible }">
+  <div class="hover-actions flex-center" :style="style" :class="{ active: isVisible }">
     <span class="icon see" title="open" @click="$emit('pick')"></span>
     <span v-if="!isSavedDrive" class="icon plus" title="select" @click="$emit('select')"></span>
     <span v-if="isSavedDrive" class="icon cross" title="remove" @click="$emit('remove')"></span>
@@ -12,12 +12,9 @@
 
 .hover-actions {
   @include whiteOpacity(background-color, 0.5);
-  display: flex;
+  flex-direction: column;
   z-index: 3;
   position: absolute;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
   visibility: hidden;
 
