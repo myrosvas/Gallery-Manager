@@ -2,7 +2,7 @@
   <div class="gallery">
     <div class="gallery-nav">
       <div class="flex-center">
-        <div class="hint" v-if="!count && !isLoading && !searchInput">Gallery is empty</div>
+        <div class="hint" v-if="!count && !isLoading && !search">Gallery is empty</div>
         <div class="hint" v-else>
           Count:
           <b>{{count}}</b>
@@ -120,7 +120,7 @@ export default {
     ...mapGetters({
       count: "count",
       viewType: "viewType",
-      searchInput: "searchInput",
+      search: "search",
       items: "filteredItems"
     }),
     columns() {

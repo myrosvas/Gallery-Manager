@@ -1,7 +1,7 @@
 <template>
   <div class="search-wrapper">
     <input type="text" v-model="search" placeholder="Search image..."/>
-    <button @click="nullifySearchResults()">&#10005;</button>
+    <button v-if="search.length" @click="clearSearch()">&#10005;</button>
   </div>
 </template>
 
@@ -13,23 +13,23 @@ export default {
   watch: {
     search: debounce(
       function (value) {
-      this.saveSearchInput(value);
+      this.updateSearch(value);
     }, 500)
   },
   computed: {
     search: {
       get () {
-        return this.$store.state.searchInput
+        return this.$store.state.search
       },
       set (value) {
-        this.saveSearchInput(value);
+        this.updateSearch(value);
       }
     }
   },
   methods: {
     ...mapMutations({
-      saveSearchInput: "saveSearchInput",
-      nullifySearchResults: "nullifySearchResults"
+      updateSearch: "updateSearch",
+      clearSearch: "clearSearch"
     })
   }
 }
@@ -49,7 +49,7 @@ export default {
   input {
     @include blackOpacity(color, 0.7);
     width: 150px;
-    padding: 4px 25px 4px 12px;
+    padding: 4px 25px 4px 6px;
     border: 1px solid rgba(0,0,0,.12);
     background: $white;
     font-size: 12px;

@@ -8,7 +8,7 @@ export const state = () => ({
   step: 0,
   viewType: viewTypeEnum.grid,
   filterType: 'date',
-  searchInput: ''
+  search: ''
 })
 
 export const actions = {
@@ -89,11 +89,11 @@ export const mutations = {
       state.filterType = payload;
     }
   },
-  saveSearchInput(state, payload) {
-    state.searchInput = payload;
+  updateSearch(state, payload) {
+    state.search = payload;
   },
-  nullifySearchResults(state) {
-    state.searchInput = '';
+  clearSearch(state) {
+    state.search = '';
   }
 }
 
@@ -102,8 +102,8 @@ export const getters = {
     return uniq(state.items, item => item.url);
   },
   foundItems(state, getters) {
-    return state.searchInput.length 
-    ? getters.uniqueItems.filter(({name}) => name.includes(state.searchInput)) 
+    return state.search.length 
+    ? getters.uniqueItems.filter(({name}) => name.includes(state.search)) 
     : getters.uniqueItems
   },
   filteredItems(state, getters) {
@@ -136,5 +136,5 @@ export const getters = {
   },
   viewType: (state) => state.viewType,
   filterType: (state) => state.filterType,
-  searchInput: (state) => state.searchInput
+  search: (state) => state.search
 }
