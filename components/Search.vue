@@ -21,7 +21,7 @@ export default {
         return this.$store.state.search
       },
       set (value) {
-        this.updateSearch(value);
+        this.updateInput(value);
       }
     }
   },
