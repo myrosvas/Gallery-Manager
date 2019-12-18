@@ -1,10 +1,14 @@
 import { uniq } from "underscore";
+import { viewTypeEnum, filtersEnum } from "../config/gallery.config";
 
 export const state = () => ({
   items: [],
   prevItems: [],
   limit: 0,
   step: 0,
+  viewType: viewTypeEnum.grid,
+  filterType: 'date',
+  search: ''
 })
 
 export const actions = {
@@ -50,7 +54,7 @@ export const actions = {
 export const mutations = {
   add(state, items) {
     state.items = state.items.concat(items);
-    setTimeout(() => this.$toast.success('Added to the gallery'), 400);
+    setTimeout(() => this.$toast.success('Added to the gallery'), 200);
   },
   save(state) {
     state.prevItems = state.items;
@@ -69,21 +73,69 @@ export const mutations = {
     if (payload) {
       const { limit, step } = payload;
 
-      state.limit = limit;
       state.step = step;
+      state.limit = limit;
     } else {
       state.limit = state.limit + state.step;
     }
+  },
+  changeViewType(state, payload) {
+    if (payload) {
+      state.viewType = payload;
+    }
+  },
+  changeFilterType(state, payload) {
+    if (payload) {
+      state.filterType = payload;
+    }
+  },
+  updateSearch(state, payload) {
+    state.search = payload;
+  },
+  clearSearch(state) {
+    state.search = '';
   }
 }
 
 export const getters = {
-  filteredItems(state) {
+  uniqueItems(state) {
     return uniq(state.items, item => item.url);
   },
-  count: (state, getters) => getters.filteredItems.length,
+  foundItems(state, getters) {
+    return state.search.length
+      ? getters.uniqueItems.filter(({ name }) => name.includes(state.search))
+      : getters.uniqueItems
+  },
+  filteredItems(state, getters) {
+    const { foundItems } = getters;
+
+    switch (state.filterType) {
+      case filtersEnum.size:
+        return foundItems.sort((prevEl, nextEl) => {
+          return prevEl.size - nextEl.size;
+        });
+      case filtersEnum.name:
+        return foundItems.sort((prevEl, nextEl) => {
+          const prevName = prevEl.name.toUpperCase();
+          const nextName = nextEl.name.toUpperCase();
+          const isPrevLetterBigger = (prevName > nextName) ? 1 : 0;
+
+          return (prevName < nextName) ? -1 : isPrevLetterBigger;
+        });
+      case filtersEnum.date:
+        return foundItems.sort((prevEl, nextEl) => {
+          return new Date(prevEl.mtime) - new Date(nextEl.mtime);
+        })
+      default:
+        return foundItems;
+    }
+  },
+  count: (state, getters) => getters.uniqueItems.length,
+  filteredCount: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
-  }
-  // limited: (state, getters) => getters.filteredItems,
+  },
+  viewType: (state) => state.viewType,
+  filterType: (state) => state.filterType,
+  search: (state) => state.search
 }

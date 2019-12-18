@@ -1,5 +1,5 @@
 <template>
-  <div class="hover-actions" :style="style" :class="{ active: isVisible }">
+  <div class="hover-actions flex-center" :style="style" :class="{ active: isVisible }">
     <span class="icon see" title="open" @click="$emit('pick')"></span>
     <span v-if="!isSavedDrive" class="icon plus" title="select" @click="$emit('select')"></span>
     <span v-if="isSavedDrive" class="icon cross" title="remove" @click="$emit('remove')"></span>
@@ -7,14 +7,14 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+@import "~/assets/css/mixins";
+
 .hover-actions {
-  display: flex;
+  @include whiteOpacity(background-color, 0.5);
+  flex-direction: column;
   z-index: 3;
   position: absolute;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.5);
   opacity: 0;
   visibility: hidden;
 

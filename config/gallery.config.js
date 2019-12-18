@@ -1,5 +1,6 @@
 export const config = {
-  hoverDebounce: 90
+  hoverDebounce: 90,
+  searchDebounce: 500
 };
 
 export const grid = {
@@ -46,3 +47,13 @@ export const list = {
   bench: 20
 };
 
+export const viewTypeEnum = {
+  list: 'list',
+  grid: 'grid'
+};
+
+export const filtersEnum = {
+  date: 'date',
+  name: 'name',
+  size: 'size'
+};

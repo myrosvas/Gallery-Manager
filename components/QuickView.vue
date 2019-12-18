@@ -1,8 +1,9 @@
 <template>
-  <div class="quick-view">
+  <div class="quick-view fixed flex-center text-center">
     <div class="box">
       <div class="img-container">
         <v-lazy-image :src="selected.url" />
+        <span class="img-loader absolute"></span>
       </div>
       <div class="metadata">
         <div class="text-left">
@@ -42,39 +43,46 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+@import "~/assets/css/mixins";
+
 .quick-view {
-  position: fixed;
+  @include blackOpacity(background-color, 0.5);
   z-index: 3;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  text-align: center;
 
   .img-container {
     min-height: 100px;
-    text-align: center;
+    position: relative;
+    margin-bottom: 10px;
   }
 
   img {
-    margin-bottom: 10px;
-    max-height: calc(100vh - 180px);
     opacity: 0;
-    transition: opacity 0.15s;
+    min-height: 100px;
+    max-height: 100px;
+    transition: .25s;
   }
 
   .v-lazy-image-loaded {
+    max-height: calc(100vh - 180px);
     opacity: 1;
   }
+
+  .v-lazy-image-loaded + .img-loader {
+    display: none;
+  }
+}
+
+.img-loader {
+  z-index: 2;
+  display: block;
+  background: #fff url("~assets/icons/preloader.gif") no-repeat center;
+  background-size: 45px;
 }
 
 .box {
   margin: 2rem;
-  background-color: #fff;
+  background-color: $white;
   padding: 20px;
   max-width: 90%;
   max-height: 100%;

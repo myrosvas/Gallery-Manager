@@ -1,49 +1,18 @@
 <template>
   <div class="gallery">
     <div class="gallery-nav">
-      <div class="flex-center">
+      <div class="flex-center gallery-nav--left">
+        <Loader :isLoading="isLoading" />
         <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
         <div class="hint" v-if="count && !isLoading">
           Count:
-          <b>{{count}}</b>
+          <b>{{filteredCount}}</b>
         </div>
       </div>
-      <div class="flex-center">
-        <div v-if="isLoading" class="loading flex-center">
-          <i class="loading"></i>
-          <span>Loading...</span>
-        </div>
-        <div v-if="count" class="view-controls flex-center">
-          <div
-            class="icon-grid"
-            @click="activateGridView"
-            :class="{active: isGridView}"
-            title="grid view"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div
-            class="icon-list"
-            @click="activateListView"
-            :class="{active: isListView}"
-            title="list view"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
+      <Search v-if="count" />
+      <div v-if="count" class="flex-center">
+        <Filters :resetGridView="resetGridView" />
+        <ViewControls :viewType="viewType" />
       </div>
       <!-- <div class="align-right">
         <select v-if="items.length" v-model="size">
@@ -54,14 +23,14 @@
 
     <div
       class="gallery-grid"
-      :class="{size, 'grid-disabled': !isGridView}"
+      :class="{size, 'grid-disabled': (viewType === viewTypeEnum.list)}"
       v-infinite-scroll="append"
       infinite-scroll-disabled="busy"
       infinite-scroll-immediate-check="true"
       infinite-scroll-distance="400"
       @mouseleave="hideActions"
     >
-      <div v-if="isGridView" @mouseover="debounceActions">
+      <div v-if="viewType === viewTypeEnum.grid" @mouseover="debounceActions">
         <masonry ref="masonry" :cols="columns" :gutter="{default: '5px'}">
           <GridItem
             v-for="(item, index) in limited"
@@ -74,7 +43,7 @@
       </div>
 
       <HoverActions
-        v-if="isGridView"
+        v-if="viewType === viewTypeEnum.grid"
         :isSavedDrive="isSavedDrive"
         :data="picked"
         @pick="pick()"
@@ -83,15 +52,15 @@
       />
     </div>
 
-    <div v-if="isListView" class="gallery-list" ref="list">
-      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench">
+    <div v-if="viewType === viewTypeEnum.list" class="gallery-list" ref="list">
+      <virtual-list :size="list.height" :remain="list.remain" :bench="list.bench" :variable="true">
         <ListItem
           v-for="item in items"
           :key="item.thumbUrl"
           :item="item"
           :isNativeLoading="isNativeLoading"
           :isSavedDrive="isSavedDrive"
-          :minHeight="list.height"
+          :style="{ height: Math.max(list.height, Math.ceil(110 * item.height / item.width) + 6) + 'px'}"
           @pick="pick"
           @select="selectItem"
           @remove="removeFromSaved"
@@ -108,22 +77,28 @@ import QuickView from "~/components/QuickView.vue";
 import ListItem from "~/components/ListItem.vue";
 import GridItem from "~/components/GridItem.vue";
 import HoverActions from "~/components/HoverActions.vue";
+import Loader from "~/components/Loader.vue";
+import ViewControls from "~/components/ViewControls.vue";
+import Search from "~/components/Search.vue";
+import Filters from "~/components/Filters.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { debounce } from "underscore";
-import { grid, list, config } from "../config/gallery.config";
+import { grid, list, config, viewTypeEnum } from "../config/gallery.config";
 
 export default {
   components: {
     QuickView,
     ListItem,
     GridItem,
-    HoverActions
+    HoverActions,
+    Loader,
+    ViewControls,
+    Filters,
+    Search
   },
   data: () => {
     return {
       isOpen: false,
-      isGridView: true,
-      isListView: false,
       isNativeLoading:
         typeof window !== "undefined"
           ? "loading" in window.HTMLImageElement.prototype
@@ -131,13 +106,18 @@ export default {
       selected: null,
       size: "small",
       picked: null,
-      list
+      list,
+      viewTypeEnum
     };
   },
-  props: ["items", "limited", "isSavedDrive", "isLoading"],
+  props: ["limited", "isSavedDrive", "isLoading"],
   computed: {
     ...mapGetters({
-      count: "count"
+      count: "count",
+      filteredCount: "filteredCount",
+      viewType: "viewType",
+      search: "search",
+      items: "filteredItems"
     }),
     columns() {
       return this.isSavedDrive
@@ -147,19 +127,36 @@ export default {
   },
   created() {
     this.debounceActions = debounce(this.showActions, config.hoverDebounce);
+    this.changeViewType(this.$cookies.get("viewType"));
   },
   mounted() {
-    if (this.isGridView) {
-      this.resetGridView();
-    }
-    if (this.isListView) {
-      this.resetListView();
+    switch (this.viewType) {
+      case viewTypeEnum.grid:
+        this.resetGridView();
+        break;
+      case viewTypeEnum.list:
+        this.resetListView();
+        break;
+      default:
+        console.error("viewType is incorrect");
     }
   },
   watch: {
     isSavedDrive: function() {
-      if (this.isGridView) {
+      if (this.viewType === viewTypeEnum.grid) {
         this.resetGridView();
+      }
+    },
+    viewType: function(type) {
+      switch (type) {
+        case viewTypeEnum.grid:
+          this.resetGridView();
+          break;
+        case viewTypeEnum.list:
+          this.$nextTick(() => this.resetListView());
+          break;
+        default:
+          console.error("viewType is incorrect");
       }
     }
   },
@@ -167,7 +164,8 @@ export default {
     ...mapActions(["removeFromSaved"]),
     ...mapMutations({
       selectItem: "selected/select",
-      changeInterval: "changeInterval"
+      changeInterval: "changeInterval",
+      changeViewType: "changeViewType"
     }),
     pick(item) {
       if (item) {
@@ -252,20 +250,6 @@ export default {
       this.picked = null;
       // clean up debounce drawback
       setTimeout(() => (this.picked = null), config.hoverDebounce);
-    },
-    activateGridView() {
-      if (this.isGridView) return;
-
-      this.resetGridView();
-      this.isListView = false;
-      this.isGridView = true;
-    },
-    activateListView() {
-      if (this.isListView) return;
-
-      this.isGridView = false;
-      this.isListView = true;
-      this.$nextTick(() => this.resetListView());
     }
   }
 };
@@ -273,6 +257,7 @@ export default {
 
 <style lang="scss">
 @import "~/assets/css/vars";
+@import "~/assets/css/mixins";
 
 .gallery {
   flex: 1;
@@ -280,7 +265,7 @@ export default {
   flex-direction: column;
   padding: 0 0 7px 12px;
   border-radius: 5px;
-  box-shadow: 0 13px 20px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 13px 20px -6px $box-shadow-color;
 
   &-list {
     flex: 1;
@@ -298,6 +283,11 @@ export default {
   padding-right: 12px;
   align-items: center;
   justify-content: space-between;
+
+  &--left {
+    min-width: 180px;
+    justify-content: left;
+  }
 }
 
 .gallery-grid {
@@ -319,48 +309,13 @@ export default {
   }
 }
 
-.view-controls {
-  margin-left: 20px;
-
-  div {
-    height: 24px;
-    border: 1px solid #dadada;
-    background-color: #fff;
-    cursor: pointer;
-    position: relative;
-
-    &:hover {
-      span {
-        background-color: #999;
-      }
-    }
-
-    &.active {
-      cursor: default;
-      background-color: #fff;
-      span {
-        background-color: #000;
-      }
-    }
-
-    span {
-      display: block;
-      position: absolute;
-      width: 5px;
-      height: 4px;
-      background-color: #b7b7b7;
-      transition: background-color ease 0.1s;
-    }
-  }
-}
-
 .icon-grid {
   width: 29px;
   z-index: 2;
   border-radius: 2px 0 0 2px;
 
   &.active + div {
-    border-left: 1px solid #fff;
+    border-left: 1px solid $white;
   }
   span:nth-child(1) {
     top: 2px;
@@ -412,7 +367,7 @@ export default {
   left: -1px;
 
   div + &.active {
-    border-left: 1px solid #fff;
+    border-left: 1px solid $white;
   }
   span:nth-child(1) {
     top: 2px;

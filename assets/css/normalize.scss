@@ -14,6 +14,10 @@ html {
   background-color: $light-grey;
 }
 
+body {
+  min-width: 1024px;
+}
+
 *,
 *:before,
 *:after {
@@ -28,8 +32,22 @@ a {
 
 select,
 button,
+input,
 textarea {
   font-family: $font;
+}
+
+input {
+  background: $white;
+  font-size: 13px;
+  border: 1px $grey-border-btn solid;
+  transition: 0.1s;
+  width: 100%;
+  outline: none;
+
+  &:focus {
+    border-color: $grey-border-dark;
+  }
 }
 
 button {
@@ -40,23 +58,23 @@ button {
   line-height: 30px;
   margin: 0;
   padding: 0 10px;
-  background-color: #fff;
+  background-color: $white;
   background-image: none;
-  background: linear-gradient(#ffffff, #ffffff);
+  background: linear-gradient($white, $white);
   cursor: pointer;
   transition: 0.1s;
   outline: none;
 
-  &:hover {
-    border-color: #a2a2a2;
+  &:hover, &:focus {
+    border-color: $grey-border-dark;
   }
 }
 
 button:disabled {
   cursor: default;
 
-  &:hover {
-    border-color: #ccc;
+  &:hover, &:focus {
+    border-color: $grey-border-light;
   }
 }
 
@@ -66,13 +84,12 @@ select {
   color: $default;
   font-family: $font, sans-serif;
   outline: none;
-  border-color: #d1d1d1;
-  background-color: #fff;
+  border-color: $grey-border-btn;
+  background-color: $white;
   transition: 0.1s;
 
-
-  &:hover {
-    border-color: #a2a2a2;
+  &:hover, &:focus {
+    border-color: $grey-border-dark;
   }
 }
 

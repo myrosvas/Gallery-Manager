@@ -1,5 +1,5 @@
 <template>
-  <div class="l-item" :style="style">
+  <div class="l-item">
     <div class="l-img">
       <img v-if="isNativeLoading" :src="item.thumbUrl" loading="lazy" />
       <v-lazy-image v-if="!isNativeLoading" :src="item.thumbUrl" />
@@ -28,6 +28,8 @@
 </template>
 
 <style lang="scss">
+@import "~/assets/css/vars";
+
 .l-item {
   box-sizing: border-box;
   display: flex;
@@ -64,7 +66,7 @@
 }
 
 .l-item + .l-item {
-  border-top: 1px dashed #f0f0f0;
+  border-top: 1px dashed $light-grey;
 }
 </style>
 
@@ -76,19 +78,6 @@ export default {
   mixins: [itemMixin, metadataMixin],
   props: {
     isSavedDrive: Boolean,
-    minHeight: {
-      type: Number,
-      default: 0
-    }
-  },
-  computed: {
-    style() {
-      const h = Math.ceil((110 * this.item.height) / this.item.width) + 6;
-
-      return h < this.minHeight
-        ? { height: this.minHeight + "px" }
-        : { height: h + "px" };
-    }
   }
 };
 </script>
