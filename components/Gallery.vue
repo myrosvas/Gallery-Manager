@@ -2,12 +2,8 @@
   <div class="gallery">
     <div class="gallery-nav">
       <div class="flex-center">
-        <div class="hint" v-if="!count && !isLoading && !foundItems.length && !searchInput">Gallery is empty</div>
-        <div class="hint" v-if="searchInput">
-          Found images:
-          <b>{{foundItems.length}}</b>
-        </div>
-        <div class="hint" v-if="count && !isLoading && !foundItems.length && !searchInput">
+        <div class="hint" v-if="!count && !isLoading && !searchInput">Gallery is empty</div>
+        <div class="hint" v-else>
           Count:
           <b>{{count}}</b>
         </div>
@@ -124,9 +120,8 @@ export default {
     ...mapGetters({
       count: "count",
       viewType: "viewType",
-      foundItems: "foundItems",
       searchInput: "searchInput",
-      items: "items"
+      items: "filteredItems"
     }),
     columns() {
       return this.isSavedDrive
