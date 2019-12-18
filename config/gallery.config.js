@@ -1,5 +1,6 @@
 export const config = {
-  hoverDebounce: 90
+  hoverDebounce: 90,
+  searchDebounce: 500
 };
 
 export const grid = {

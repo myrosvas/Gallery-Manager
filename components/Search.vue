@@ -8,13 +8,12 @@
 <script>
 import { debounce } from "underscore";
 import { mapMutations } from "vuex";
+import { config } from "../config/gallery.config";
+
 
 export default {
-  watch: {
-    search: debounce(
-      function (value) {
-      this.updateSearch(value);
-    }, 500)
+  created() {
+    this.updateInput = debounce(this.updateSearch, config.searchDebounce);
   },
   computed: {
     search: {
@@ -22,7 +21,7 @@ export default {
         return this.$store.state.search
       },
       set (value) {
-        this.updateSearch(value);
+        this.updateInput(value);
       }
     }
   },
