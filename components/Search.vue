@@ -10,27 +10,22 @@ import { debounce } from "underscore";
 import { mapMutations } from "vuex";
 
 export default {
-  data: () => {
-    return {
-      search: ''
-    }
-  },
   watch: {
     search: debounce(
       function (value) {
       this.saveSearchInput(value);
     }, 500)
   },
-  // computed: {
-  //   search: {
-  //     get () {
-  //       return this.$store.state.search
-  //     },
-  //     set (value) {
-  //       this.saveSearchInput();
-  //     }
-  //   }
-  // },
+  computed: {
+    search: {
+      get () {
+        return this.$store.state.searchInput
+      },
+      set (value) {
+        this.saveSearchInput(value);
+      }
+    }
+  },
   methods: {
     ...mapMutations({
       saveSearchInput: "saveSearchInput",

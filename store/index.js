@@ -94,7 +94,6 @@ export const mutations = {
   },
   nullifySearchResults(state) {
     state.searchInput = '';
-    console.log('nullified!');
   }
 }
 
