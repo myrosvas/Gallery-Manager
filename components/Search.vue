@@ -2,7 +2,7 @@
   <div class="search flex-center">
     <div class="search-wrapper flex-center">
       <input type="text" v-model="search" placeholder="Search image..." />
-      <button v-if="search.length" @click="clearSearch()" title="clear">&#10005;</button>
+      <button class="flex-center" v-if="search.length" @click="clearSearch()" title="clear">&#10005;</button>
     </div>
   </div>
 </template>
@@ -64,9 +64,6 @@ export default {
     position: absolute;
     top: 3px;
     right: 2px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
     width: 20px;
     height: 19px;
     font-size: 14px;

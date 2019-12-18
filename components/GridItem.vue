@@ -1,5 +1,5 @@
 <template>
-  <div class="grid-item">
+  <div class="grid-item flex-center">
     <img v-if="isNativeLoading" :src="item.thumbUrl" loading="lazy" />
     <v-lazy-image v-if="!isNativeLoading" :src="item.thumbUrl" />
   </div>
@@ -11,9 +11,6 @@
 
 .grid-item {
   margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   background-color: $medium-grey;
 
@@ -47,7 +44,10 @@
 .over {
   @include whiteOpacity(background-color, 0.5);
   // display: none;
+  flex-direction: column;
   display: flex;
+  align-items: center;
+  justify-content: center;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.02s 0.09s;
@@ -56,9 +56,6 @@
   right: 0;
   top: 0;
   bottom: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .see {
