@@ -1,8 +1,9 @@
 <template>
-  <div class="quick-view">
+  <div class="quick-view fixed flex-center text-center">
     <div class="box">
       <div class="img-container">
         <v-lazy-image :src="selected.url" />
+        <span class="img-loader absolute"></span>
       </div>
       <div class="metadata">
         <div class="text-left">
@@ -47,41 +48,36 @@
 
 .quick-view {
   @include blackOpacity(background-color, 0.5);
-  position: fixed;
   z-index: 3;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
 
   .img-container {
     min-height: 100px;
-    background-image: url("~assets/icons/preloader.gif");
-    background-repeat: no-repeat;
-    background-position: center;
-    text-align: center;
+    position: relative;
+    margin-bottom: 10px;
   }
 
   img {
-    margin-bottom: 10px;
     opacity: 0;
-    transition: opacity 0.15s;
+    min-height: 100px;
+    max-height: 100px;
+    transition: .25s;
   }
 
-  .v-lazy-image {
-    max-height: 0;
-    transition: max-height 0.15s ease-out;
-  }
-  
   .v-lazy-image-loaded {
     max-height: calc(100vh - 180px);
-    transition: max-height 0.25s ease-in;
     opacity: 1;
   }
+
+  .v-lazy-image-loaded + .img-loader {
+    display: none;
+  }
+}
+
+.img-loader {
+  z-index: 2;
+  display: block;
+  background: #fff url("~assets/icons/preloader.gif") no-repeat center;
+  background-size: 45px;
 }
 
 .box {
