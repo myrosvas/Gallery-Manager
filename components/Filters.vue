@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-wrapper">
+  <div class="filter-wrapper flex-center">
     <span>Filter by:</span>
     <select v-model="filterType">
       <option v-for="value in filtersEnum" :key="value">{{ value }}</option>
@@ -41,19 +41,14 @@
 @import "~/assets/css/vars";
 
   .filter-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 30px;
-    width: 130px;
-    margin-left: 10px;
-
     select {
       height: 25px;
+      margin-left: 5px;
     }
 
     span {
       color: $grey;
+      font-size: 13px;
     }
   }
 </style>

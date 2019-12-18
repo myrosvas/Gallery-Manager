@@ -1,16 +1,16 @@
 <template>
   <div class="gallery">
     <div class="gallery-nav">
-      <div class="flex-center">
-        <div class="hint" v-if="!count && !isLoading && !search">Gallery is empty</div>
-        <div class="hint" v-else>
+      <div class="flex-center gallery-nav--left">
+        <Loader :isLoading="isLoading" />
+        <div class="hint" v-if="!count && !isLoading">Gallery is empty</div>
+        <div class="hint" v-if="count && !isLoading">
           Count:
-          <b>{{count}}</b>
+          <b>{{filteredCount}}</b>
         </div>
       </div>
-      <div class="flex-center">
-        <Loader :isLoading="isLoading" />
-        <Search />
+      <Search v-if="count" />
+      <div v-if="count" class="flex-center">
         <Filters :resetGridView="resetGridView" />
         <ViewControls :viewType="viewType" />
       </div>
@@ -68,12 +68,7 @@
       </virtual-list>
     </div>
 
-    <QuickView
-      v-if="isOpen"
-      :selected="selected"
-      :isSavedDrive="isSavedDrive"
-      @close="close"
-    />
+    <QuickView v-if="isOpen" :selected="selected" :isSavedDrive="isSavedDrive" @close="close" />
   </div>
 </template>
 
@@ -119,6 +114,7 @@ export default {
   computed: {
     ...mapGetters({
       count: "count",
+      filteredCount: "filteredCount",
       viewType: "viewType",
       search: "search",
       items: "filteredItems"
@@ -287,6 +283,11 @@ export default {
   padding-right: 12px;
   align-items: center;
   justify-content: space-between;
+
+  &--left {
+    min-width: 180px;
+    justify-content: left;
+  }
 }
 
 .gallery-grid {

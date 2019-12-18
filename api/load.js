@@ -10,6 +10,11 @@ const { relativePath, thumb } = assetConfig;
 export default async (req, res, next) => {
   const drive = req.query && req.query.drive;
   const directoryPath = path.join(__dirname, `${relativePath}/${drive}/`);
+  const savedFolderPath = path.join(__dirname, `${relativePath}/saved/`);
+
+  if (!fs.existsSync(savedFolderPath)) {
+    fs.mkdirSync(savedFolderPath);
+  }
 
   if (!drive || !fs.existsSync(directoryPath)) {
     res.status(404).send('Drive is not found');

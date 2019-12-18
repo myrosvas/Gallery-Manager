@@ -102,9 +102,9 @@ export const getters = {
     return uniq(state.items, item => item.url);
   },
   foundItems(state, getters) {
-    return state.search.length 
-    ? getters.uniqueItems.filter(({name}) => name.includes(state.search)) 
-    : getters.uniqueItems
+    return state.search.length
+      ? getters.uniqueItems.filter(({ name }) => name.includes(state.search))
+      : getters.uniqueItems
   },
   filteredItems(state, getters) {
     const { foundItems } = getters;
@@ -119,7 +119,7 @@ export const getters = {
           const prevName = prevEl.name.toUpperCase();
           const nextName = nextEl.name.toUpperCase();
           const isPrevLetterBigger = (prevName > nextName) ? 1 : 0;
-      
+
           return (prevName < nextName) ? -1 : isPrevLetterBigger;
         });
       case filtersEnum.date:
@@ -130,7 +130,8 @@ export const getters = {
         return foundItems;
     }
   },
-  count: (state, getters) => getters.filteredItems.length,
+  count: (state, getters) => getters.uniqueItems.length,
+  filteredCount: (state, getters) => getters.filteredItems.length,
   limited(state, getters) {
     return getters.filteredItems.slice(0, state.limit);
   },

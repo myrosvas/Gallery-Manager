@@ -1,7 +1,9 @@
 <template>
-  <div class="search-wrapper">
-    <input type="text" v-model="search" placeholder="Search image..."/>
-    <button v-if="search.length" @click="clearSearch()">&#10005;</button>
+  <div class="search flex-center">
+    <div class="search-wrapper flex-center">
+      <input type="text" v-model="search" placeholder="Search image..." />
+      <button v-if="search.length" @click="clearSearch()" title="clear">&#10005;</button>
+    </div>
   </div>
 </template>
 
@@ -10,17 +12,16 @@ import { debounce } from "underscore";
 import { mapMutations } from "vuex";
 import { config } from "../config/gallery.config";
 
-
 export default {
   created() {
     this.updateInput = debounce(this.updateSearch, config.searchDebounce);
   },
   computed: {
     search: {
-      get () {
-        return this.$store.state.search
+      get() {
+        return this.$store.state.search;
       },
-      set (value) {
+      set(value) {
         this.updateInput(value);
       }
     }
@@ -31,28 +32,26 @@ export default {
       clearSearch: "clearSearch"
     })
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 @import "~/assets/css/vars";
 @import "~/assets/css/mixins";
 
+.search {
+  flex: 1;
+  margin-left: 10px;
+}
+
 .search-wrapper {
   position: relative;
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  width: 150px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 20px;
 
   input {
-    @include blackOpacity(color, 0.7);
-    width: 150px;
-    padding: 4px 25px 4px 6px;
-    border: 1px solid rgba(0,0,0,.12);
-    background: $white;
-    font-size: 12px;
-    transition: .15s all ease-in-out;
+    padding: 4px 24px 4px 6px;
   }
 
   &::-webkit-input-placeholder {
@@ -63,16 +62,23 @@ export default {
 
   button {
     position: absolute;
-    top: -2px;
-    right: 5px;
+    top: 3px;
+    right: 2px;
     display: flex;
     align-content: center;
-    width: 25px;
-    height: 25px;
-    font-size: 15px;
+    justify-content: center;
+    width: 20px;
+    height: 19px;
+    font-size: 14px;
     font-weight: bold;
     background: transparent;
-    border: none;
+    line-height: 18px;
+    border-color: transparent;
+
+    &:focus {
+      background-color: #000;
+      color: #fff;
+    }
   }
 }
 </style>

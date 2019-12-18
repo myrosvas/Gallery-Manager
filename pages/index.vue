@@ -24,18 +24,14 @@
           >{{item.name}}</option>
         </select>
         <button v-if="!isSavedDrive" @click="load(myListLocation)">My List</button>
-        <button v-if="!isSavedDrive" @click="drop" :disabled="!items.length">Drop Gallery</button>
+        <button v-if="!isSavedDrive" @click="drop" :disabled="!count">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Commit Selected</button>
       </nav>
     </header>
 
     <section>
-      <Gallery
-        :limited="limited"
-        :isSavedDrive="isSavedDrive"
-        :isLoading="isLoading"
-      />
+      <Gallery :limited="limited" :isSavedDrive="isSavedDrive" :isLoading="isLoading" />
       <Selected v-if="!isSavedDrive" />
     </section>
   </div>
@@ -69,9 +65,15 @@ export default {
       if (path) {
         this.load(path);
       }
+    },
+    count(value) {
+      if (!value && !this.isSavedDrive) {
+        this.location = null;
+      }
     }
   },
   computed: mapGetters({
+    count: "count",
     items: "filteredItems",
     limited: "limited",
     selected: "selected/filtered"
