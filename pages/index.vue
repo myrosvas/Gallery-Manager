@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <Logo />
-      <nav>
+      <nav class="navigation-container">
         <!-- TODO: upload from the local disc -->
         <!-- <div class="file">
           <label for="upload" class="btn">load local images</label>
@@ -23,10 +23,11 @@
             :disabled="index === 0"
           >{{item.name}}</option>
         </select>
-        <button v-if="!isSavedDrive" @click="load(myListLocation)">My List</button>
-        <button v-if="!isSavedDrive" @click="drop" :disabled="!count">Drop Gallery</button>
-        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Save Selected</button>
-        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length">Commit Selected</button>
+        <button v-if="!isSavedDrive" @click="load(myListLocation)" class="btn">My List</button>
+        <button v-if="!isSavedDrive" @click="drop" :disabled="!count" class="btn">Drop Gallery</button>
+        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length" class="btn">Save Selected</button>
+        <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length" class="btn">Commit Selected</button>
+        <AccountNavigation v-if="!isSavedDrive" :load="load" />
       </nav>
     </header>
 
@@ -41,6 +42,7 @@
 import Logo from "~/components/Logo.vue";
 import Gallery from "~/components/Gallery.vue";
 import Selected from "~/components/Selected.vue";
+import AccountNavigation from "~/components/AccountNavigation.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { locations, myListLocation } from "~/config/locations.config";
 
@@ -48,7 +50,8 @@ export default {
   components: {
     Logo,
     Gallery,
-    Selected
+    Selected,
+    AccountNavigation
   },
   data() {
     return {
@@ -156,6 +159,12 @@ export default {
   flex-direction: column;
 }
 
+.navigation-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 header {
   display: flex;
   height: 60px;
@@ -179,11 +188,10 @@ section > div {
 .btn {
   font-size: 11px;
   display: inline-block;
-  cursor: pointer;
   text-transform: uppercase;
   height: 30px;
   line-height: 30px;
-  margin: 0;
+  margin: 0 5px;
   padding: 0 10px;
   background-color: $white;
   cursor: pointer;
