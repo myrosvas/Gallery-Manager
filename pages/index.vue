@@ -27,7 +27,7 @@
         <button v-if="!isSavedDrive" @click="drop" :disabled="!count" class="btn">Drop Gallery</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length" class="btn">Save Selected</button>
         <button v-if="!isSavedDrive" @click="save" :disabled="!selected.length" class="btn">Commit Selected</button>
-        <AccountNavigation v-if="!isSavedDrive" :load="load" />
+        <User v-if="!isSavedDrive" :load="load" />
       </nav>
     </header>
 
@@ -42,7 +42,7 @@
 import Logo from "~/components/Logo.vue";
 import Gallery from "~/components/Gallery.vue";
 import Selected from "~/components/Selected.vue";
-import AccountNavigation from "~/components/AccountNavigation.vue";
+import User from "~/components/User.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import { locations, myListLocation } from "~/config/locations.config";
 
@@ -51,7 +51,7 @@ export default {
     Logo,
     Gallery,
     Selected,
-    AccountNavigation
+    User
   },
   data() {
     return {
