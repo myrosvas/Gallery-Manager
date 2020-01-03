@@ -5,18 +5,19 @@
       @click="toggleMenu"
       :style="{ backgroundImage: `url(${user.avatarImg})`}"
     />
-    <div v-if="isMenuOpen" class="user-menu">
+    <div v-if="isMenuOpen" class="user-menu" @blur="toggleMenu">
       <ul class="nav-menu-list">
         <li class="nav-menu-list-item">
           <span class="name">{{ user.name }}</span>
           <span class="email">{{ user.email }}</span>
         </li>
-        <hr>
+        <hr class="grey-border">
         <li class="nav-menu-list-item">
           <button class="menu-btn" @click="load(myListLocation)">
             My list
           </button>
         </li>
+        <hr class="grey-border">
         <li class="nav-menu-list-item">
           <button class="menu-btn disabled">
             Log out
@@ -49,6 +50,7 @@
     methods: {
       toggleMenu: function () {
         this.isMenuOpen = !this.isMenuOpen;
+        console.log(this.isMenuOpen);
       }
     }
   }
@@ -64,7 +66,8 @@
       position: relative;
       width: 35px;
       height: 35px;
-      background-size: contain;
+      margin-right: 20px;
+      background-size: cover;
       background-repeat: no-repeat;
       border: 1px solid $grey-border-btn;
       border-radius: 50%;
@@ -72,18 +75,34 @@
       &:hover {
         border-color: $grey-border-dark;
       }
+
+      &:after {
+        content: "⌄";
+        position: absolute;
+        right: -25px;
+        top: 0;
+        font-weight: bold;
+        font-size: 26px;
+      }
     }
 
     &-menu {
       position: absolute;
-      top: 35px;
-      right: 5px;
-      padding: 5px 10px;
+      top: 55px;
+      right: 10px;
+      padding: 5px 0;
       background-color: $white;
       border: 1px solid $grey-border-btn;
-      border-radius: 5%;
+      border-radius: 3%;
       z-index: 2;
+      box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
+      -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
+      -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
     }
+  }
+
+  .grey-border {
+    border: 1px solid $grey-border-btn;
   }
 
   .nav-menu-list {
@@ -92,6 +111,7 @@
     text-align: center;
 
     &-item {
+      padding: 0 10px;
       text-align: left;
       list-style: none;
 
@@ -106,12 +126,15 @@
   }
 
   .menu-btn {
-    height: 25px;
-    padding: 0;
+    display: flex;
+    align-content: center;
     margin: 0;
+    padding: 0;
+    height: 40px;
     background: none;
     border: none;
-    font-size: 12px;
+    font-size: 14px;
+    text-transform: none;
 
     &:hover {
       text-decoration: underline;
