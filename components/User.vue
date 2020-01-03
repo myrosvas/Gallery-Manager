@@ -5,7 +5,7 @@
       @click="toggleMenu"
       :style="{ backgroundImage: `url(${user.avatarImg})`}"
     />
-    <div v-if="isMenuOpen" class="user-menu" @blur="toggleMenu">
+    <div class="user-menu" v-if="isMenuOpen" v-on-clickaway="toggleMenu">
       <ul class="nav-menu-list">
         <li class="nav-menu-list-item">
           <span class="name">{{ user.name }}</span>
@@ -29,10 +29,14 @@
 </template>
 
 <script>
+  import { directive as onClickaway } from 'vue-clickaway';
   import { myListLocation } from "~/config/locations.config";
   import defaultAvatar from '~/assets/default/default-user-image.png';
 
   export default {
+    directives: {
+      onClickaway,
+    },
     props: {
       load: Function
     },
@@ -50,7 +54,6 @@
     methods: {
       toggleMenu: function () {
         this.isMenuOpen = !this.isMenuOpen;
-        console.log(this.isMenuOpen);
       }
     }
   }
@@ -66,7 +69,7 @@
       position: relative;
       width: 35px;
       height: 35px;
-      margin-right: 20px;
+      margin-right: 30px;
       background-size: cover;
       background-repeat: no-repeat;
       border: 1px solid $grey-border-btn;
@@ -77,12 +80,15 @@
       }
 
       &:after {
-        content: "⌄";
+        content: "";
         position: absolute;
+        top: 12px;
         right: -25px;
-        top: 0;
-        font-weight: bold;
-        font-size: 26px;
+        display: inline-block;
+        padding: 3px;
+        border: solid $black;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
       }
     }
 
@@ -96,8 +102,6 @@
       border-radius: 3%;
       z-index: 2;
       box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
-      -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
-      -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
     }
   }
 
