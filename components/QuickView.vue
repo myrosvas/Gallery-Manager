@@ -1,9 +1,15 @@
 <template>
   <div class="quick-view fixed flex-center text-center">
     <div class="box">
-      <div class="img-container">
-        <v-lazy-image :src="selected.url" />
-        <span class="img-loader absolute"></span>
+      <div class="img-data">
+        <div class="img-container">
+          <v-lazy-image :src="selected.url" @load="onLoad" ref="img" />
+          <span class="img-loader absolute"></span>
+        </div>
+
+        <div v-if="tags" class="img-attrs">
+          <pre><code>{{tags}}</code></pre>
+        </div>
       </div>
       <div class="metadata">
         <div class="text-left">
@@ -15,23 +21,15 @@
             <b>path:</b>
             {{selected.url}}
           </div>
-          <div v-if="selected.mtime">
-            <b>last modified:</b>
-            {{selected.mtime | date}}
-          </div>
         </div>
         <div class="text-right">
           <div v-if="selected.size">
             <b>size:</b>
             {{selected.size | kb }} KB
           </div>
-          <div>
-            <b>astraId:</b>
-            {{selected.astraId ? selected.astraId : 'TBD'}}
-          </div>
-          <div>
-            <b>jobId:</b>
-            {{selected.jobId ? selected.jobId : 'TBD'}}
+          <div v-if="selected.mtime">
+            <b>last modified:</b>
+            {{selected.mtime | date}}
           </div>
         </div>
       </div>
@@ -50,21 +48,40 @@
   @include blackOpacity(background-color, 0.5);
   z-index: 3;
 
+  .img-data {
+    display: flex;
+  }
+
   .img-container {
     min-height: 100px;
+    flex: 1;
     position: relative;
     margin-bottom: 10px;
+  }
+
+  .img-attrs {
+    flex: 0 0 500px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    text-align: left;
+    padding: 10px;
+    background-color: #eff0f1;
+    border-radius: 5px;
+
+    pre {
+      font-size: 13px;
+    }
   }
 
   img {
     opacity: 0;
     min-height: 100px;
     max-height: 100px;
-    transition: .25s;
+    transition: 0.25s;
   }
 
   .v-lazy-image-loaded {
-    max-height: calc(100vh - 180px);
+    max-height: calc(100vh - 160px);
     opacity: 1;
   }
 
@@ -109,9 +126,15 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
+import { EXIF } from "exif-js";
 import { metadataMixin } from "~/mixins/metadataMixin";
 
 export default {
+  data() {
+    return {
+      tags: ""
+    };
+  },
   props: ["selected", "isSavedDrive"],
   mixins: [metadataMixin],
   methods: {
@@ -119,6 +142,17 @@ export default {
     ...mapMutations({
       selectItem: "selected/select"
     }),
+    onLoad() {
+      const $img = this.$refs.img.$el;
+      const self = this;
+
+      EXIF.getData($img, function() {
+        const tags = EXIF.getAllTags(this);
+        self.tags = Object.keys(tags).length
+          ? JSON.stringify(tags, null, 2)
+          : "";
+      });
+    },
     close() {
       this.$emit("close");
     },

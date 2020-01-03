@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const { promisify } = require('util');
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
+// const exif = require('exif-reader');
 const { assetConfig } = require('../config/asset.config');
 const { relativePath, thumb } = assetConfig;
 
@@ -58,6 +59,8 @@ export default async (req, res, next) => {
       dimensions = isThumbExist
         ? await sharp(fullThumbUrl).metadata()
         : await sharp(fullPath)
+          // .metadata()
+          // .then(data => console.log(exif(data.exif)))
           .resize(thumb.width)
           .webp()
           .toFile(fullThumbUrl);
