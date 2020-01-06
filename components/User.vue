@@ -31,7 +31,7 @@
 <script>
   import { directive as onClickaway } from 'vue-clickaway';
   import { myListLocation } from "~/config/locations.config";
-  import defaultAvatar from '~/assets/default/default-user-image.png';
+  import defaultAvatar from '~/assets/default/user.svg';
 
   export default {
     directives: {
@@ -46,8 +46,8 @@
         myListLocation,
         user: {
           avatarImg: defaultAvatar,
-          email: 'andriii.tereshchuk@macys.com',
-          name: 'Andrii Tereshchuk'
+          email: 'john.doe@macys.com',
+          name: 'John Doe'
         },
       }
     },
@@ -69,44 +69,44 @@
       position: relative;
       width: 35px;
       height: 35px;
-      margin-right: 30px;
+      margin-left: 20px;
       background-size: cover;
       background-repeat: no-repeat;
-      border: 1px solid $grey-border-btn;
       border-radius: 50%;
-
-      &:hover {
-        border-color: $grey-border-dark;
-      }
-
-      &:after {
-        content: "";
-        position: absolute;
-        top: 12px;
-        right: -25px;
-        display: inline-block;
-        padding: 3px;
-        border: solid $black;
-        border-width: 0 3px 3px 0;
-        transform: rotate(45deg);
-      }
     }
 
     &-menu {
       position: absolute;
-      top: 55px;
-      right: 10px;
+      top: 40px;
+      right: 6px;
       padding: 5px 0;
+      min-width: 180px;
       background-color: $white;
-      border: 1px solid $grey-border-btn;
+      border: 1px solid $medium-grey;
       border-radius: 3%;
       z-index: 2;
-      box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.30);
+      box-shadow: 0 4px 10px -3px $box-shadow-color;
+
+      &:after {
+        display: block;
+        content: '';
+        position: absolute;
+        right: 6px;
+        top: -4px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid #fff;
+      }
     }
   }
 
   .grey-border {
-    border: 1px solid $grey-border-btn;
+    display: block;
+    height: 1px;
+    background-color: $medium-grey;
+    border: none;
   }
 
   .nav-menu-list {
@@ -123,8 +123,8 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        height: 50px;
         font-size: 14px;
+        padding: 5px 10px;
       }
     }
   }
@@ -134,15 +134,10 @@
     align-content: center;
     margin: 0;
     padding: 0;
-    height: 40px;
     background: none;
     border: none;
     font-size: 14px;
     text-transform: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 
   .name {
@@ -157,5 +152,6 @@
 
   .disabled {
     color: $grey-border-dark;
+    cursor: default;
   }
 </style>
