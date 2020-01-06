@@ -107,6 +107,7 @@
     height: 1px;
     background-color: $medium-grey;
     border: none;
+    margin: 2px 0;
   }
 
   .nav-menu-list {
