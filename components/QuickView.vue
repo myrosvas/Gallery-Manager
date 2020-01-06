@@ -128,6 +128,7 @@
 import { mapActions, mapMutations } from "vuex";
 import { EXIF } from "exif-js";
 import { metadataMixin } from "~/mixins/metadataMixin";
+import { piexif } from 'piexifjs';
 
 export default {
   data() {
@@ -143,15 +144,9 @@ export default {
       selectItem: "selected/select"
     }),
     onLoad() {
-      const $img = this.$refs.img.$el;
-      const self = this;
-
-      EXIF.getData($img, function() {
-        const tags = EXIF.getAllTags(this);
-        self.tags = Object.keys(tags).length
-          ? JSON.stringify(tags, null, 2)
-          : "";
-      });
+      const image = this.$refs.img.$el;
+      console.log(this.$refs.img);
+  
     },
     close() {
       this.$emit("close");
