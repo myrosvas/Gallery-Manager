@@ -5,18 +5,19 @@
       @click="toggleMenu"
       :style="{ backgroundImage: `url(${user.avatarImg})`}"
     />
-    <div v-if="isMenuOpen" class="user-menu">
+    <div class="user-menu" v-if="isMenuOpen" v-on-clickaway="toggleMenu">
       <ul class="nav-menu-list">
         <li class="nav-menu-list-item">
           <span class="name">{{ user.name }}</span>
           <span class="email">{{ user.email }}</span>
         </li>
-        <hr>
+        <hr class="grey-border">
         <li class="nav-menu-list-item">
           <button class="menu-btn" @click="load(myListLocation)">
             My list
           </button>
         </li>
+        <hr class="grey-border">
         <li class="nav-menu-list-item">
           <button class="menu-btn disabled">
             Log out
@@ -28,10 +29,14 @@
 </template>
 
 <script>
+  import { directive as onClickaway } from 'vue-clickaway';
   import { myListLocation } from "~/config/locations.config";
-  import defaultAvatar from '~/assets/default/default-user-image.png';
+  import defaultAvatar from '~/assets/default/user.svg';
 
   export default {
+    directives: {
+      onClickaway,
+    },
     props: {
       load: Function
     },
@@ -41,8 +46,8 @@
         myListLocation,
         user: {
           avatarImg: defaultAvatar,
-          email: 'andriii.tereshchuk@macys.com',
-          name: 'Andrii Tereshchuk'
+          email: 'john.doe@macys.com',
+          name: 'John Doe'
         },
       }
     },
@@ -64,26 +69,44 @@
       position: relative;
       width: 35px;
       height: 35px;
-      background-size: contain;
+      margin-left: 20px;
+      background-size: cover;
       background-repeat: no-repeat;
-      border: 1px solid $grey-border-btn;
       border-radius: 50%;
-
-      &:hover {
-        border-color: $grey-border-dark;
-      }
     }
 
     &-menu {
       position: absolute;
-      top: 35px;
-      right: 5px;
-      padding: 5px 10px;
+      top: 40px;
+      right: 6px;
+      padding: 5px 0;
+      min-width: 180px;
       background-color: $white;
-      border: 1px solid $grey-border-btn;
-      border-radius: 5%;
+      border: 1px solid $medium-grey;
+      border-radius: 3%;
       z-index: 2;
+      box-shadow: 0 4px 10px -3px $box-shadow-color;
+
+      &:after {
+        display: block;
+        content: '';
+        position: absolute;
+        right: 6px;
+        top: -4px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid #fff;
+      }
     }
+  }
+
+  .grey-border {
+    display: block;
+    height: 1px;
+    background-color: $medium-grey;
+    border: none;
   }
 
   .nav-menu-list {
@@ -92,6 +115,7 @@
     text-align: center;
 
     &-item {
+      padding: 0 10px;
       text-align: left;
       list-style: none;
 
@@ -99,23 +123,21 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        height: 50px;
         font-size: 14px;
+        padding: 5px 10px;
       }
     }
   }
 
   .menu-btn {
-    height: 25px;
-    padding: 0;
+    display: flex;
+    align-content: center;
     margin: 0;
+    padding: 0;
     background: none;
     border: none;
-    font-size: 12px;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    font-size: 14px;
+    text-transform: none;
   }
 
   .name {
@@ -130,5 +152,6 @@
 
   .disabled {
     color: $grey-border-dark;
+    cursor: default;
   }
 </style>
