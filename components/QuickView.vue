@@ -7,30 +7,30 @@
           <span class="img-loader absolute"></span>
         </div>
 
-        <div v-if="tags" class="img-attrs">
-          <pre><code>{{tags}}</code></pre>
-        </div>
-      </div>
-      <div class="metadata">
-        <div class="text-left">
-          <div v-if="selected.name">
+        <div class="img-metadata">
+          <div class="tag disabled">
             <b>name:</b>
-            {{selected.name}}
+            <span>{{selected.name}}</span>
           </div>
-          <div>
+          <div class="tag disabled">
             <b>path:</b>
-            {{selected.url}}
+            <span>{{selected.url}}</span>
           </div>
-        </div>
-        <div class="text-right">
-          <div v-if="selected.size">
+          <div v-if="selected.size" class="tag disabled">
             <b>size:</b>
-            {{selected.size | kb }} KB
+            <span>{{selected.size | kb }} KB</span>
           </div>
-          <div v-if="selected.mtime">
+          <div v-if="selected.mtime" class="tag disabled">
             <b>last modified:</b>
-            {{selected.mtime | date}}
+            <span>{{selected.mtime | date}}</span>
           </div>
+
+          <div class="exif-data">
+            <span v-for="(value, name) in exifData" :key="name">
+              <b>{{name}}</b>: {{value}}
+            </span>
+          </div>
+
         </div>
       </div>
       <button @click="close">close</button>
@@ -114,6 +114,18 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.exif-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 420px;
+  max-height: 900px;
+  padding: 10px 20px;
+  line-height: 25px;
+  overflow: scroll;
+}
+
 .metadata {
   width: 100%;
   display: flex;
@@ -126,14 +138,32 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import { EXIF } from "exif-js";
 import { metadataMixin } from "~/mixins/metadataMixin";
 import { piexif } from 'piexifjs';
+import { ExifTags } from '../config/exifTags.config';
+
+// Move this function to the helpers!!!
+  const convertFileToDataURL = (url, callback) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = function() {
+      const reader = new FileReader();
+
+      reader.onloadend = function() {
+        callback(reader.result);
+      }
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+  }
 
 export default {
   data() {
     return {
-      tags: ""
+      tags: "",
+      exifData: {}
     };
   },
   props: ["selected", "isSavedDrive"],
@@ -144,9 +174,34 @@ export default {
       selectItem: "selected/select"
     }),
     onLoad() {
-      const image = this.$refs.img.$el;
-      console.log(this.$refs.img);
-  
+      const imageSrc = this.$refs.img.$el.src;
+
+      const getExifData = (data) => {
+        // const allImageData = piexif.load(data);
+        const zeroth = piexif.load(data)['0th'];
+        const exif = piexif.load(data)['Exif'];
+        const GPS = piexif.load(data)['GPS'];
+        const interop = piexif.load(data)['Interop'];
+        const first = piexif.load(data)['1st'];
+
+        const exifDataRaw = {...exifDataRaw, ...exif, ...GPS, ...interop, ...first};
+
+        const renameKeys = (obj) => {
+          const keyValues = Object.keys(obj).map(key => {
+          const newKey = ExifTags[key];
+
+          return { [newKey]: obj[key] };
+          });
+
+          return Object.assign({}, ...keyValues);
+        }
+        this.exifData = renameKeys(exifDataRaw);
+
+        // piexif.dump(file) - Get exif as string to insert into JPEG.
+        // piexif.insert(exifStr, jpegData) - Insert exif into JPEG. If jpegData is DataURL, returns JPEG as DataURL. Else if jpegData is binary as string, returns JPEG as binary as string.
+      }
+
+      convertFileToDataURL(imageSrc, getExifData);
     },
     close() {
       this.$emit("close");
