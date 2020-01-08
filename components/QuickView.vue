@@ -197,8 +197,22 @@ export default {
         const exifStr = piexif.dump(newData);
         // Here I need to convert exifDataRaw into dataURL and pass it to piexif.insert(exifStr, exifDataRawDataURL);
         const newStr = piexif.insert(exifStr, data);
-        console.log(newStr === data); // Returns false, which means the string has been changed successfully, but what to do next?
+        // console.log(newStr === data); // Returns false, which means the string has been changed successfully, but what to do next?
+        const newExif = piexif.load(newStr);
+        const zeroth = newExif['0th'];
+        const exif = newExif['Exif'];
+        const GPS = newExif['GPS'];
+        const interop = newExif['Interop'];
+        const first = newExif['1st'];
+        const newExifDataToRender = {...zeroth, ...exif, ...GPS, ...interop, ...first};
+        // console.log(renameKeys(newExifDataToRender));
+        this.exifData = renameKeys(newExifDataToRender);
         
+        // change the image to a new one: https://piexifjs.readthedocs.io/en/latest/sample.html Insert Exif into jpeg part - this way doesn't work
+      
+        // Maybe this way: https://piexif.readthedocs.io/en/latest/functions.html#transplant ?
+        // piexif.transplant(exifStr, data);
+
         // piexif.dump(jpegData) - Get exif as string to insert into JPEG.
         // piexif.insert(exifStr, jpegData) - Insert exif into JPEG. If jpegData is DataURL, returns JPEG as DataURL. Else if jpegData is binary as string, returns JPEG as binary as string.
       }
