@@ -196,8 +196,9 @@ export default {
         // Creating a string out of changed newData object (so it can be inserted into JPEG):
         const exifStr = piexif.dump(newData);
         // Here I need to convert exifDataRaw into dataURL and pass it to piexif.insert(exifStr, exifDataRawDataURL);
-        piexif.insert(exifStr, data);
-        console.log(piexif.insert(exifStr, data)); // How to check if the data has been changed now?
+        const newStr = piexif.insert(exifStr, data);
+        console.log(newStr === data); // Returns false, which means the string has been changed successfully, but what to do next?
+        
         // piexif.dump(jpegData) - Get exif as string to insert into JPEG.
         // piexif.insert(exifStr, jpegData) - Insert exif into JPEG. If jpegData is DataURL, returns JPEG as DataURL. Else if jpegData is binary as string, returns JPEG as binary as string.
       }
@@ -205,6 +206,7 @@ export default {
       const getExifData = (data) => {
         // Getting all exif data of the image
         const allImageData = piexif.load(data);
+        // console.log(data);
         // Joining all data objects into one object (except thumbnail, because we won't be changing it)
         const zeroth = allImageData['0th'];
         const exif = allImageData['Exif'];
@@ -212,7 +214,7 @@ export default {
         const interop = allImageData['Interop'];
         const first = allImageData['1st'];
         const exifDataRaw = {...exifDataRaw, ...exif, ...GPS, ...interop, ...first};
-        // Converting tag IDs into tag names (e.g. 305 > 'Make') and rendering the data:
+        // Converting tag IDs into tag names (e.g. '305' > 'Make') and rendering the data:
         this.exifData = renameKeys(exifDataRaw);
         // Calling the function to change the exif data
         changeExifData(data, allImageData, exifDataRaw);
