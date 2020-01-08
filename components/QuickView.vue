@@ -177,31 +177,48 @@ export default {
     onLoad() {
       const imageSrc = this.$refs.img.$el.src;
 
-      const getExifData = (data) => {
-        // const allImageData = piexif.load(data);
-        const zeroth = piexif.load(data)['0th'];
-        const exif = piexif.load(data)['Exif'];
-        const GPS = piexif.load(data)['GPS'];
-        const interop = piexif.load(data)['Interop'];
-        const first = piexif.load(data)['1st'];
-
-        const exifDataRaw = {...exifDataRaw, ...exif, ...GPS, ...interop, ...first};
-
-        const renameKeys = (obj) => {
-          const keyValues = Object.keys(obj).map(key => {
+      // This function converts tag IDs into tag names (e.g. 305 > 'Make')
+      const renameKeys = (obj) => {
+        const keyValues = Object.keys(obj).map(key => {
           const newKey = ExifTags[key];
 
           return { [newKey]: obj[key] };
-          });
+        });
 
-          return Object.assign({}, ...keyValues);
-        }
-        this.exifData = renameKeys(exifDataRaw);
+        return Object.assign({}, ...keyValues);
+      }
 
-        // piexif.dump(file) - Get exif as string to insert into JPEG.
+      const changeExifData = (data, allImageData, exifDataRaw) => {
+        // Making a copy of allImageData object:
+        const newData = {...allImageData};
+        // Mutating the value in the newData object for testing:
+        newData['0th']['271'] = "Changed";
+        // Creating a string out of changed newData object (so it can be inserted into JPEG):
+        const exifStr = piexif.dump(newData);
+        // Here I need to convert exifDataRaw into dataURL and pass it to piexif.insert(exifStr, exifDataRawDataURL);
+        piexif.insert(exifStr, data);
+        console.log(piexif.insert(exifStr, data)); // How to check if the data has been changed now?
+        // piexif.dump(jpegData) - Get exif as string to insert into JPEG.
         // piexif.insert(exifStr, jpegData) - Insert exif into JPEG. If jpegData is DataURL, returns JPEG as DataURL. Else if jpegData is binary as string, returns JPEG as binary as string.
       }
 
+      const getExifData = (data) => {
+        // Getting all exif data of the image
+        const allImageData = piexif.load(data);
+        // Joining all data objects into one object (except thumbnail, because we won't be changing it)
+        const zeroth = allImageData['0th'];
+        const exif = allImageData['Exif'];
+        const GPS = allImageData['GPS'];
+        const interop = allImageData['Interop'];
+        const first = allImageData['1st'];
+        const exifDataRaw = {...exifDataRaw, ...exif, ...GPS, ...interop, ...first};
+        // Converting tag IDs into tag names (e.g. 305 > 'Make') and rendering the data:
+        this.exifData = renameKeys(exifDataRaw);
+        // Calling the function to change the exif data
+        changeExifData(data, allImageData, exifDataRaw);
+      }
+
+      // Takes the image src, converts the image into dataURL and passes it into the getExifData function:
       convertFileToDataURL(imageSrc, getExifData);
     },
     close() {
