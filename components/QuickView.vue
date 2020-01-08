@@ -27,7 +27,8 @@
 
           <div class="exif-data">
             <span v-for="(value, name) in exifData" :key="name">
-              <b>{{name}}</b>: {{value}}
+              <b>{{name}}</b>: 
+              {{Array.isArray(value) ? value.toString().split(',').join(', ') : value}}
             </span>
           </div>
 
