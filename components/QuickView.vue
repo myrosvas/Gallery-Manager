@@ -83,6 +83,7 @@ export default {
     }),
     onLoad() {
       const imageSrc = this.$refs.img.$el.src;
+      this.selected.tagsToChange = [];
 
       const convertTagIdIntoName = (obj) => {
         const keyValues = Object.keys(obj).map(key => {
@@ -149,6 +150,7 @@ export default {
     },
     edit(tag) {
       tag.edit = true;
+      this.selected.tagsToChange.push(tag);
       this.$nextTick(() => {
         this.$refs[tag.key][0].focus();
       });

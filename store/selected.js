@@ -7,7 +7,7 @@ export const state = () => ({
 
 export const actions = {
   async saveToServer({ getters }) {
-    const selected = getters.filtered.map(({ name, url }) => ({ name, url }));
+    const selected = getters.filtered.map(({ name, url, tagsToChange }) => ({ name, url, tagsToChange }));
 
     try {
       await this.$axios.$post("/api/save", { selected });
@@ -17,7 +17,7 @@ export const actions = {
     }
   },
   saveToDrive({ getters }) {
-    getters.filtered.forEach(({ url, name }) => saveAs(url, name));
+    getters.filtered.forEach(({ url, name, tagsToChange }) => saveAs(url, name, tagsToChange));
   }
 }
 
