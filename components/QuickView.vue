@@ -62,6 +62,7 @@ import { metadataMixin } from "~/mixins/metadataMixin";
 import { metadataConfig } from "~/config/metadata.config";
 import { ExifTags } from '../config/exifTags.config';
 import { convertFileToDataURL } from '../helpers/convertFileToDataURL';
+import { flattenObject } from '../helpers/flattenObject';
 
 export default {
   data() {
@@ -83,36 +84,18 @@ export default {
     }),
     onLoad() {
       const imageSrc = this.$refs.img.$el.src;
+
       this.selected.tagsToChange = [];
 
       const convertTagIdIntoName = (obj) => {
         const keyValues = Object.keys(obj).map(key => {
           const newKey = ExifTags[key];
+
           return { [newKey]: obj[key] };
         });
+
         return Object.assign({}, ...keyValues);
       }
-
-      const flattenObject = (ob) => {
-        const toReturn = {};
-        
-        for (let i in ob) {
-          if (!ob.hasOwnProperty(i)) continue;
-          
-          if ((typeof ob[i]) == 'object') {
-            const flatObject = flattenObject(ob[i]);
-
-            for (let x in flatObject) {
-              if (!flatObject.hasOwnProperty(x)) continue;
-              
-              toReturn[x] = flatObject[x];
-            }
-          } else {
-            toReturn[i] = ob[i];
-          }
-        }
-        return toReturn;
-      };
 
       const filterTags = (convertedTags) => {
         this.filteredTags = Object.keys(convertedTags)
