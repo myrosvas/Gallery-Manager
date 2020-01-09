@@ -6,7 +6,6 @@
           <v-lazy-image :src="selected.url" @load="onLoad" ref="img" />
           <span class="img-loader absolute"></span>
         </div>
-
         <div class="img-metadata">
           <div class="tag disabled">
             <b>name:</b>
@@ -24,14 +23,28 @@
             <b>last modified:</b>
             <span>{{selected.mtime | date}}</span>
           </div>
-
-          <div class="exif-data">
-            <span v-for="(value, name) in exifData" :key="name">
-              <b>{{name}}</b>: 
-              {{Array.isArray(value) ? value.toString().split(',').join(', ') : value}}
+          <div
+            class="tag"
+            :class="{'disabled': !tag.isEditable}"
+            v-for="tag in filteredTags"
+            :key="tag.key"
+          >
+            <b>{{tag.label}}:</b>
+            <span>
+              <i v-if="!tag.edit">
+                <template v-if="tag.filter === 'date'">{{tag.value | date}}</template>
+                <template v-else-if="tag.filter === 'px'">{{tag.value | px}}</template>
+                <template v-else>{{tag.value}}</template>
+              </i>
+              <input
+                :ref="tag.key"
+                v-if="tag.isEditable && tag.edit"
+                v-model="tag.value"
+                v-on:keyup="onPress(tag, $event)"
+              />
+              <button v-if="tag.isEditable && !tag.edit" class="edit" @click.prevent="edit(tag)"></button>
             </span>
           </div>
-
         </div>
       </div>
       <button @click="close">close</button>
@@ -40,6 +53,118 @@
     </div>
   </div>
 </template>
+
+<script>
+import { mapActions, mapMutations } from "vuex";
+import { piexif } from 'piexifjs';
+import { all } from 'q';
+import { metadataMixin } from "~/mixins/metadataMixin";
+import { metadataConfig } from "~/config/metadata.config";
+import { ExifTags } from '../config/exifTags.config';
+import { convertFileToDataURL } from '../helpers/convertFileToDataURL';
+
+export default {
+  data() {
+    return {
+      filteredTags: []
+    };
+  },
+  props: ["selected", "isSavedDrive"],
+  mixins: [metadataMixin],
+  computed: {
+    hasTags() {
+      return Object.keys(this.filteredTags).length;
+    }
+  },
+  methods: {
+    ...mapActions(["removeFromSaved"]),
+    ...mapMutations({
+      selectItem: "selected/select"
+    }),
+    onLoad() {
+      const imageSrc = this.$refs.img.$el.src;
+
+      const convertTagIdIntoName = (obj) => {
+        const keyValues = Object.keys(obj).map(key => {
+          const newKey = ExifTags[key];
+          return { [newKey]: obj[key] };
+        });
+        return Object.assign({}, ...keyValues);
+      }
+
+      const flattenObject = (ob) => {
+        const toReturn = {};
+        
+        for (let i in ob) {
+          if (!ob.hasOwnProperty(i)) continue;
+          
+          if ((typeof ob[i]) == 'object') {
+            const flatObject = flattenObject(ob[i]);
+
+            for (let x in flatObject) {
+              if (!flatObject.hasOwnProperty(x)) continue;
+              
+              toReturn[x] = flatObject[x];
+            }
+          } else {
+            toReturn[i] = ob[i];
+          }
+        }
+        return toReturn;
+      };
+
+      const filterTags = (convertedTags) => {
+        this.filteredTags = Object.keys(convertedTags)
+          .filter(key => metadataConfig[key])
+          .map(key => ({
+            key,
+            label: metadataConfig[key].label,
+            isEditable: metadataConfig[key].isEditable,
+            filter: metadataConfig[key].filter,
+            value: convertedTags[key],
+            edit: false
+          }));
+      }
+
+      const getExifData = (data) => {
+        const allImageData = piexif.load(data);
+        const allTags = flattenObject(allImageData);
+        const convertedTags = convertTagIdIntoName(allTags);
+
+        filterTags(convertedTags);
+      }
+
+      convertFileToDataURL(imageSrc, getExifData);
+    },
+    close() {
+      this.$emit("close");
+    },
+    select() {
+      this.selectItem(this.selected);
+      this.close();
+    },
+    remove() {
+      this.removeFromSaved(this.selected);
+      this.close();
+    },
+    edit(tag) {
+      tag.edit = true;
+      this.$nextTick(() => {
+        this.$refs[tag.key][0].focus();
+      });
+
+      // setTimeout(() => {
+      //   debugger;
+      // }, 1000);
+    },
+    onPress(tag, event) {
+      if (event.keyCode === 13 || event.keyCode === 27) {
+        tag.edit = false;
+      }
+    }
+  }
+};
+</script>
 
 <style lang="scss">
 @import "~/assets/css/vars";
@@ -51,18 +176,19 @@
 
   .img-data {
     display: flex;
+    margin-bottom: 10px;
   }
 
   .img-container {
     min-height: 100px;
     flex: 1;
     position: relative;
-    margin-bottom: 10px;
   }
 
-  .img-attrs {
-    flex: 0 0 500px;
-    max-height: calc(100vh - 160px);
+  .img-metadata {
+    flex: 0 0 350px;
+    max-height: $box-height;
+    margin-left: 10px;
     overflow-y: auto;
     text-align: left;
     padding: 10px;
@@ -82,7 +208,7 @@
   }
 
   .v-lazy-image-loaded {
-    max-height: calc(100vh - 160px);
+    max-height: $box-height;
     opacity: 1;
   }
 
@@ -94,7 +220,7 @@
 .img-loader {
   z-index: 2;
   display: block;
-  background: #fff url("~assets/icons/preloader.gif") no-repeat center;
+  background: $white url("~assets/icons/preloader.gif") no-repeat center;
   background-size: 45px;
 }
 
@@ -116,138 +242,41 @@
   cursor: pointer;
 }
 
-.exif-data {
+.tag {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-height: 420px;
-  max-height: 900px;
-  padding: 10px 20px;
-  line-height: 25px;
-  overflow: scroll;
-}
-
-.metadata {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  font-size: 14px;
+  margin-bottom: 5px;
   line-height: 18px;
+  font-size: 14px;
+
+  input {
+    width: 100%;
+  }
+
+  i {
+    font-style: normal;
+  }
+
+  &.disabled {
+    color: $dark-grey;
+  }
+
+  span {
+    position: relative;
+    display: flex;
+    flex: 1;
+    margin-left: 5px;
+  }
+
+  .edit {
+    height: 18px;
+    width: 18px;
+    margin-left: 5px;
+    background: $black;
+    background-image: url("~assets/icons/edit.svg");
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+    border: none;
+  }
 }
 </style>
-
-<script>
-import { mapActions, mapMutations } from "vuex";
-import { metadataMixin } from "~/mixins/metadataMixin";
-import { piexif } from 'piexifjs';
-import { ExifTags } from '../config/exifTags.config';
-
-// Move this function to the helpers!!!
-  const convertFileToDataURL = (url, callback) => {
-    const xhr = new XMLHttpRequest();
-
-    xhr.onload = function() {
-      const reader = new FileReader();
-
-      reader.onloadend = function() {
-        callback(reader.result);
-      }
-      reader.readAsDataURL(xhr.response);
-    };
-    xhr.open('GET', url);
-    xhr.responseType = 'blob';
-    xhr.send();
-  }
-
-export default {
-  data() {
-    return {
-      tags: "",
-      exifData: {}
-    };
-  },
-  props: ["selected", "isSavedDrive"],
-  mixins: [metadataMixin],
-  methods: {
-    ...mapActions(["removeFromSaved"]),
-    ...mapMutations({
-      selectItem: "selected/select"
-    }),
-    onLoad() {
-      const imageSrc = this.$refs.img.$el.src;
-
-      // This function converts tag IDs into tag names (e.g. 305 > 'Make')
-      const renameKeys = (obj) => {
-        const keyValues = Object.keys(obj).map(key => {
-          const newKey = ExifTags[key];
-
-          return { [newKey]: obj[key] };
-        });
-
-        return Object.assign({}, ...keyValues);
-      }
-
-      const changeExifData = (data, allImageData, exifDataRaw) => {
-        // Making a copy of allImageData object:
-        const newData = {...allImageData};
-        // Mutating the value in the newData object for testing:
-        newData['0th']['271'] = "Changed";
-        // Creating a string out of changed newData object (so it can be inserted into JPEG):
-        const exifStr = piexif.dump(newData);
-        // Here I need to convert exifDataRaw into dataURL and pass it to piexif.insert(exifStr, exifDataRawDataURL);
-        const newStr = piexif.insert(exifStr, data);
-        // console.log(newStr === data); // Returns false, which means the string has been changed successfully, but what to do next?
-        const newExif = piexif.load(newStr);
-        const zeroth = newExif['0th'];
-        const exif = newExif['Exif'];
-        const GPS = newExif['GPS'];
-        const interop = newExif['Interop'];
-        const first = newExif['1st'];
-        const newExifDataToRender = {...zeroth, ...exif, ...GPS, ...interop, ...first};
-        // console.log(renameKeys(newExifDataToRender));
-        this.exifData = renameKeys(newExifDataToRender);
-        
-        // change the image to a new one: https://piexifjs.readthedocs.io/en/latest/sample.html Insert Exif into jpeg part - this way doesn't work
-      
-        // Maybe this way: https://piexif.readthedocs.io/en/latest/functions.html#transplant ?
-        // piexif.transplant(exifStr, data);
-
-        // piexif.dump(jpegData) - Get exif as string to insert into JPEG.
-        // piexif.insert(exifStr, jpegData) - Insert exif into JPEG. If jpegData is DataURL, returns JPEG as DataURL. Else if jpegData is binary as string, returns JPEG as binary as string.
-      }
-
-      const getExifData = (data) => {
-        // Getting all exif data of the image
-        const allImageData = piexif.load(data);
-        // console.log(data);
-        // Joining all data objects into one object (except thumbnail, because we won't be changing it)
-        const zeroth = allImageData['0th'];
-        const exif = allImageData['Exif'];
-        const GPS = allImageData['GPS'];
-        const interop = allImageData['Interop'];
-        const first = allImageData['1st'];
-        const exifDataRaw = {...exifDataRaw, ...exif, ...GPS, ...interop, ...first};
-        // Converting tag IDs into tag names (e.g. '305' > 'Make') and rendering the data:
-        this.exifData = renameKeys(exifDataRaw);
-        // Calling the function to change the exif data
-        changeExifData(data, allImageData, exifDataRaw);
-      }
-
-      // Takes the image src, converts the image into dataURL and passes it into the getExifData function:
-      convertFileToDataURL(imageSrc, getExifData);
-    },
-    close() {
-      this.$emit("close");
-    },
-    select() {
-      this.selectItem(this.selected);
-      this.close();
-    },
-    remove() {
-      this.removeFromSaved(this.selected);
-      this.close();
-    }
-  }
-};
-</script>
