@@ -6,7 +6,6 @@
           <v-lazy-image :src="selected.url" @load="onLoad" ref="img" />
           <span class="img-loader absolute"></span>
         </div>
-
         <div class="img-metadata">
           <div class="tag disabled">
             <b>name:</b>
@@ -24,7 +23,6 @@
             <b>last modified:</b>
             <span>{{selected.mtime | date}}</span>
           </div>
-
           <div
             class="tag"
             :class="{'disabled': !tag.isEditable}"
@@ -58,9 +56,13 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import { EXIF } from "exif-js";
+import { piexif } from 'piexifjs';
+import { all } from 'q';
 import { metadataMixin } from "~/mixins/metadataMixin";
 import { metadataConfig } from "~/config/metadata.config";
+import { ExifTags } from '../config/exifTags.config';
+import { convertFileToDataURL } from '../helpers/convertFileToDataURL';
+import { flattenObject } from '../helpers/flattenObject';
 
 export default {
   data() {
@@ -81,22 +83,42 @@ export default {
       selectItem: "selected/select"
     }),
     onLoad() {
-      const $img = this.$refs.img.$el;
-      const self = this;
+      const imageSrc = this.$refs.img.$el.src;
 
-      EXIF.getData($img, function() {
-        const allTags = EXIF.getAllTags(this);
-        self.filteredTags = Object.keys(allTags)
+      this.selected.tagsToChange = [];
+
+      const convertTagIdIntoName = (obj) => {
+        const keyValues = Object.keys(obj).map(key => {
+          const newKey = ExifTags[key];
+
+          return { [newKey]: obj[key] };
+        });
+
+        return Object.assign({}, ...keyValues);
+      }
+
+      const filterTags = (convertedTags) => {
+        this.filteredTags = Object.keys(convertedTags)
           .filter(key => metadataConfig[key])
           .map(key => ({
             key,
             label: metadataConfig[key].label,
             isEditable: metadataConfig[key].isEditable,
             filter: metadataConfig[key].filter,
-            value: allTags[key],
+            value: convertedTags[key],
             edit: false
           }));
-      });
+      }
+
+      const getExifData = (data) => {
+        const allImageData = piexif.load(data);
+        const allTags = flattenObject(allImageData);
+        const convertedTags = convertTagIdIntoName(allTags);
+
+        filterTags(convertedTags);
+      }
+
+      convertFileToDataURL(imageSrc, getExifData);
     },
     close() {
       this.$emit("close");
@@ -111,6 +133,7 @@ export default {
     },
     edit(tag) {
       tag.edit = true;
+      this.selected.tagsToChange.push(tag);
       this.$nextTick(() => {
         this.$refs[tag.key][0].focus();
       });
@@ -182,7 +205,7 @@ export default {
 .img-loader {
   z-index: 2;
   display: block;
-  background: #fff url("~assets/icons/preloader.gif") no-repeat center;
+  background: $white url("~assets/icons/preloader.gif") no-repeat center;
   background-size: 45px;
 }
 
@@ -205,10 +228,10 @@ export default {
 }
 
 .tag {
-  margin-bottom: 5px;
-  font-size: 14px;
-  line-height: 18px;
   display: flex;
+  margin-bottom: 5px;
+  line-height: 18px;
+  font-size: 14px;
 
   input {
     width: 100%;
@@ -225,21 +248,20 @@ export default {
   span {
     position: relative;
     display: flex;
-    margin-left: 5px;
     flex: 1;
+    margin-left: 5px;
   }
 
   .edit {
-    background: #000;
     height: 18px;
     width: 18px;
-    border: none;
+    margin-left: 5px;
+    background: $black;
     background-image: url("~assets/icons/edit.svg");
     background-repeat: no-repeat;
     background-size: 60%;
     background-position: center;
-    margin-left: 5px;
+    border: none;
   }
 }
 </style>
-
