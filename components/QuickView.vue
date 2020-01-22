@@ -56,13 +56,8 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import { piexif } from 'piexifjs';
-import { all } from 'q';
 import { metadataMixin } from "~/mixins/metadataMixin";
-import { metadataConfig } from "~/config/metadata.config";
-import { ExifTags } from '../config/exifTags.config';
-import { convertFileToDataURL } from '../helpers/convertFileToDataURL';
-import { flattenObject } from '../helpers/flattenObject';
+import { getExifTags } from '../utils/metadata.util';
 
 export default {
   data() {
@@ -82,43 +77,11 @@ export default {
     ...mapMutations({
       selectItem: "selected/select"
     }),
-    onLoad() {
+    async onLoad() {
       const imageSrc = this.$refs.img.$el.src;
-
+      
       this.selected.tagsToChange = [];
-
-      const convertTagIdIntoName = (obj) => {
-        const keyValues = Object.keys(obj).map(key => {
-          const newKey = ExifTags[key];
-
-          return { [newKey]: obj[key] };
-        });
-
-        return Object.assign({}, ...keyValues);
-      }
-
-      const filterTags = (convertedTags) => {
-        this.filteredTags = Object.keys(convertedTags)
-          .filter(key => metadataConfig[key])
-          .map(key => ({
-            key,
-            label: metadataConfig[key].label,
-            isEditable: metadataConfig[key].isEditable,
-            filter: metadataConfig[key].filter,
-            value: convertedTags[key],
-            edit: false
-          }));
-      }
-
-      const getExifData = (data) => {
-        const allImageData = piexif.load(data);
-        const allTags = flattenObject(allImageData);
-        const convertedTags = convertTagIdIntoName(allTags);
-
-        filterTags(convertedTags);
-      }
-
-      convertFileToDataURL(imageSrc, getExifData);
+      this.filteredTags = await getExifTags(imageSrc);
     },
     close() {
       this.$emit("close");
@@ -165,20 +128,20 @@ export default {
   }
 
   .img-container {
-    min-height: 100px;
-    flex: 1;
     position: relative;
+    flex: 1;
+    min-height: 100px;
   }
 
   .img-metadata {
     flex: 0 0 350px;
     max-height: $box-height;
     margin-left: 10px;
-    overflow-y: auto;
-    text-align: left;
     padding: 10px;
     background-color: #eff0f1;
     border-radius: 5px;
+    overflow-y: auto;
+    text-align: left;
 
     pre {
       font-size: 13px;
@@ -186,9 +149,9 @@ export default {
   }
 
   img {
-    opacity: 0;
     min-height: 100px;
     max-height: 100px;
+    opacity: 0;
     transition: 0.25s;
   }
 
@@ -203,35 +166,35 @@ export default {
 }
 
 .img-loader {
-  z-index: 2;
   display: block;
   background: $white url("~assets/icons/preloader.gif") no-repeat center;
   background-size: 45px;
+  z-index: 2;
 }
 
 .box {
   margin: 2rem;
-  background-color: $white;
   padding: 20px;
   max-width: 90%;
   max-height: 100%;
+  background-color: $white;
 }
 
 .close {
   position: absolute;
-  z-index: 2;
   top: 40px;
   right: 40px;
   font-size: 40px;
   font-weight: bold;
+  z-index: 2;
   cursor: pointer;
 }
 
 .tag {
   display: flex;
   margin-bottom: 5px;
-  line-height: 18px;
   font-size: 14px;
+  line-height: 18px;
 
   input {
     width: 100%;
