@@ -2,7 +2,7 @@
   <div v-if="isQuickViewOpen" class="quick-view fixed flex-center text-center">
     <div v-on-clickaway="toggleQuickView" class="box">
       <div class="img-data">
-        <div class="img-container">
+        <div class="img-container flex-center">
           <v-lazy-image :src="selected.url" @load="onLoad" ref="img" />
           <span class="img-loader absolute"></span>
         </div>
@@ -139,11 +139,13 @@ export default {
     position: relative;
     flex: 1;
     min-height: 100px;
+    min-width: 100px;
   }
 
   .img-metadata {
     flex: 0 0 350px;
     max-height: $box-height;
+    min-width: 350px;
     margin-left: 10px;
     padding: 10px;
     background-color: #eff0f1;
