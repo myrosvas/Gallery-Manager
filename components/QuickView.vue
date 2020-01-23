@@ -1,6 +1,6 @@
 <template>
-  <div class="quick-view fixed flex-center text-center">
-    <div class="box">
+  <div v-if="isQuickViewOpen" class="quick-view fixed flex-center text-center">
+    <div v-on-clickaway="toggleQuickView" class="box">
       <div class="img-data">
         <div class="img-container">
           <v-lazy-image :src="selected.url" @load="onLoad" ref="img" />
@@ -56,16 +56,21 @@
 
 <script>
 import { mapActions, mapMutations } from "vuex";
+import { directive as onClickaway } from 'vue-clickaway';
 import { metadataMixin } from "~/mixins/metadataMixin";
 import { getExifTags } from '../utils/metadata.util';
 
 export default {
   data() {
     return {
-      filteredTags: []
+      filteredTags: [],
+      isQuickViewOpen: true
     };
   },
   props: ["selected", "isSavedDrive"],
+  directives: {
+    onClickaway,
+  },
   mixins: [metadataMixin],
   computed: {
     hasTags() {
@@ -77,6 +82,9 @@ export default {
     ...mapMutations({
       selectItem: "selected/select"
     }),
+    toggleQuickView() {
+      this.isQuickViewOpen = !this.isQuickViewOpen;
+    },
     async onLoad() {
       const imageSrc = this.$refs.img.$el.src;
       
